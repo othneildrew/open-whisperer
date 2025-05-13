@@ -1,0 +1,16 @@
+faster-whisper
+resemblyzer
+webrtcvad
+numpy
+scipy
+scikit-learn
+pycountry
+librosa
+fastapi[standard]
+dotenv
+requests
+uvicorn
+python-multipart
+starlette
+sqlalchemy
+ffmpeg-python
