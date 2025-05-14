@@ -5,7 +5,7 @@ from starlette.status import HTTP_404_NOT_FOUND
 
 from app.db import get_db
 from app.models.session import Session
-from app.utils import generate_session_id, get_public_ip, get_storage_path
+from app.utils import get_storage_path
 
 router = APIRouter(
   prefix="/sessions",
@@ -24,9 +24,6 @@ def raise_session_not_found():
     status_code=HTTP_404_NOT_FOUND,
     detail=f"Session not found"
   )
-
-def get_session_storage_dir(session_id: str):
-  return get_storage_path() / session_id
 
 # No create session, can only be created by uploading a file
 # Also, no updating, can only be updated by uploading new file

@@ -14,3 +14,7 @@ python-multipart
 starlette
 sqlalchemy
 ffmpeg-python
+resemblyzer
+argostranslate
+pysrt
+srt

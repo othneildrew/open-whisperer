@@ -1,6 +1,9 @@
 import pycountry
 from faster_whisper import WhisperModel
 
+from app.utils import session_json_save
+
+
 # Manually add missing or non-standard codes that might be returned, not part of ISO_639-1 spec
 custom_lang_map = {
   "yue": "Cantonese",
@@ -22,32 +25,37 @@ def get_iso_639_1_lang_name(code):
   return custom_lang_map.get(code, code)
 
 
+async def persist_transcript(session_id: str, json_data):
+  await session_json_save(session_id, "transcript.json", json_data)
+  return True
+
+
 class WhisperRunner:
   def __init__(self, model_size="base", device="cpu", compute_type="int8"):
     # Load model with INT8 precision for fast CPU performance
     self.model = WhisperModel(model_size, device=device, compute_type=compute_type)
 
-  async def transcribe(self, file_path):
+  async def transcribe(self, audio_path):
     # Transcribe an audio file
-    segments, info = self.model.transcribe(file_path, beam_size=5)
+    segments, info = self.model.transcribe(audio_path, beam_size=5)
 
     # Format the language prediction data
     data = [
       {
+        "number": i,
         "start": segment.start,
         "end": segment.end,
         "text": segment.text.strip(),
-        # "words": segment.words,
-        # "seek": segment.seek,
+        "translatedText": None
       }
-      for segment in segments
+      for i, segment in enumerate(segments, start=1)
     ]
 
     meta = {
       "language": info.language,
       "probability": info.language_probability,
       "duration": info.duration,
-      "probabilities": info.all_language_probs,
+      "probabilities": info.all_language_probs[:5], # top 5 highest probabilities
     }
 
     return {"meta": meta, "data": data}
@@ -64,3 +72,4 @@ class WhisperRunner:
     ]
 
     return {"data": data}
+

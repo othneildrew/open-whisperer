@@ -5,9 +5,9 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from dotenv import load_dotenv
 
-from app.db import SessionLocal, Base, engine
+from app.db import Base, engine
 from app.utils import ALLOWED_HOSTS
-from .routes import sessions, uploads, transcribe
+from .routes import sessions, uploads, transcript
 
 development: bool = os.getenv("ENV") == 'development'
 
@@ -61,7 +61,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 # Register api routes
 app.include_router(sessions.router)
 app.include_router(uploads.router)
-app.include_router(transcribe.router)
+app.include_router(transcript.router)
 
 @app.get("/")
 async def hello():

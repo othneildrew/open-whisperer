@@ -1,11 +1,15 @@
 import os
 import uuid
 import requests
+import json
 from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import HTTPException
 from starlette.status import HTTP_404_NOT_FOUND
 
+# Don't import any source files here to avoid circular deps
+
+# Only localhost can use this service, not intended as external api
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "::1"]
 
 def is_dev():
@@ -42,6 +46,9 @@ def get_storage_path():
   relative_path = env_path.lstrip('/\\')
   return parent_dir / relative_path
 
+def get_session_storage_dir(session_id: str):
+  return get_storage_path() / session_id
+
 def delete_existing_input_files(dest_dir: Path):
   for existing_file in dest_dir.glob("input.*"):
     existing_file.unlink()
@@ -51,3 +58,24 @@ def raise_file_not_found(file):
     status_code=HTTP_404_NOT_FOUND,
     detail=f"{file} not found. Endpoints should be called according to docs to ensure dependencies exists to properly output files"
   )
+
+async def session_json_save(session_id: str, file_name: str, json_data):
+  session_dir = get_session_storage_dir(session_id)
+  temp_file = session_dir / f"{file_name}.tmp"
+  dest_file = session_dir / file_name
+  ident = 2 if is_dev else None
+
+  print(f"temp_file: {temp_file}")
+  print(f"dest_file: {dest_file}")
+
+  with open(temp_file, "w", encoding="utf-8") as f:
+    json.dump(json_data, f, ensure_ascii=False, indent=ident)
+
+  os.replace(temp_file, dest_file)
+
+async def session_json_load(session_id: str, file_name):
+  session_dir = get_session_storage_dir(session_id)
+  target_file = session_dir / file_name
+
+  with open(target_file, "r", encoding="utf-8") as f:
+    return json.load(f)
