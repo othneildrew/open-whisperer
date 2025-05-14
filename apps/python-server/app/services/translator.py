@@ -23,8 +23,14 @@ class Translator:
     subs = self.transcript["data"]
     return self.delimiter.join(sub["text"] for sub in subs)
 
-  async def __unflatten_json_text_content(self):
-    return True
+  async def __unflatten_json_text_content(self, text_content):
+    lines = text_content.split(self.delimiter)
+    subs = self.transcript["data"]
+
+    if len(lines) != len(subs):
+      raise ValueError(f"Mismatched line count: got {len(lines)} lines, expected {len(subs)} subs")
+
+    return lines
 
   async def run(self, source_lang: str, target_lang: str):
     # TODO: run check to make sure the language is supported. Should probably have that return in transcript/languages instead of what whisper supprots
@@ -36,15 +42,18 @@ class Translator:
 
     print(f"simple_csv_format: {simple_csv_format}")
 
-
     # Get each line and insert it into the transcript data
-
     translated = argostranslate.translate.translate(simple_csv_format, "es", "en")
     print(f"translated text: {translated}")
+
+    translated_lines = await self.__unflatten_json_text_content(translated)
+
+    # Update the translated text value
+    for sub, line in zip(self.transcript["data"], translated_lines):
+      sub["translatedText"] = line
 
     # Update the transcript meta to include "language_to"
     self.transcript["meta"]["language_from"] = source_lang
     self.transcript["meta"]["language_to"] = target_lang
-
 
     return translated

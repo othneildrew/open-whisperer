@@ -56,10 +56,10 @@ async def transcribe_file(session_id: str):
 
   # Store the new transcript file with translations
   # TODO: Yea, probably not the best way to do things, but my goal is to get this working in 3-4 days
-  # await persist_transcript(session_id, transcript_with_translations)
+  await persist_transcript(session_id, transcript_with_translations)
 
   # Return the transcript right away
-  return transcript
+  return transcript_with_translations
 
 
 @router.post("/{session_id}/extract")
