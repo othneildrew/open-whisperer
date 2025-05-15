@@ -1,0 +1,17 @@
+{
+  "name": "@open-whisperer/rtk-query",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/openWhispererApi.ts",
+  "scripts": {
+    "codegen": "npx @rtk-query/codegen-openapi ./openapi-config.ts"
+  },
+  "devDependencies": {
+    "@rtk-query/codegen-openapi": "^2.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2"
+  }
+}
