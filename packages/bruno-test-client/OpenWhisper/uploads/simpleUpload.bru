@@ -1,0 +1,19 @@
+meta {
+  name: simpleUpload
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{API_SERVER}}/uploads
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  file: @file(C:\Users\Drew\tools\yt-dlp\downloads\Rocío Gutiérrez-Skoldberg\videos.webm)
+}

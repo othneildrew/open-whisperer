@@ -1,0 +1,15 @@
+meta {
+  name: deleteDelete
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{API_SERVER}}/sessions/:session_id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  session_id: 78ea0b3828ac42af9deac24abb9405e8
+}

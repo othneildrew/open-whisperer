@@ -1,0 +1,15 @@
+meta {
+  name: extractAudio
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{API_SERVER}}/transcript/:session_id/extract
+  body: none
+  auth: inherit
+}
+
+params:path {
+  session_id: 3aea311b9c6a4417b9d37e9bbf6e44b6
+}

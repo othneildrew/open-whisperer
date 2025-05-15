@@ -1,0 +1,15 @@
+meta {
+  name: getSession
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{API_SERVER}}/sessions/:session_id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  session_id: 5433e4ea707744d282a9e0a6390d23b
+}

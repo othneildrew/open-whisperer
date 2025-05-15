@@ -1,0 +1,21 @@
+meta {
+  name: /
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{API_SERVER}}/uploads
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  session_id: 65840e288368485b83d7fb40559be46d
+  file: @file(E:\Vault\Angel Polikarpova\2021-12-13 - 5 THINGS TO DO WHEN YOU FEEL UNMOTIVATED.webm)
+  ~file: @file(E:\Vault\Angel Polikarpova\2021-09-03 - Trip to The Grand Canyon I Angel Polikarpova.mkv)
+}
