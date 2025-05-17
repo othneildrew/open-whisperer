@@ -56,4 +56,4 @@ class Translator:
     self.transcript["meta"]["language_from"] = source_lang
     self.transcript["meta"]["language_to"] = target_lang
 
-    return translated
+    return self.transcript

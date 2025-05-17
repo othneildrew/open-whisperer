@@ -5,9 +5,10 @@ from pathlib import Path
 from fastapi import APIRouter, UploadFile, HTTPException, Form, Depends
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 
-from app.utils import generate_session_id, get_storage_path, delete_existing_input_files, get_public_ip
 from app.models.session import Session
 from app.db import get_db
+from app.utils import generate_session_id, get_storage_path, delete_existing_input_files, get_client_ip, \
+  generate_thumbnail
 
 router = APIRouter(
   prefix="/uploads",
@@ -19,21 +20,21 @@ router = APIRouter(
 ALLOWED_EXTENSIONS = {".mp4", ".mpeg", ".mov", ".avi", ".mkv", ".webm", ".mp3", ".wav", ".ogg", ".m4a"}
 
 ALLOWED_MEDIA_TYPES = {
-  "video/mp4",        # .mp4
-  "video/mpeg",       # .mpeg
-  "video/quicktime",  # .mov
-  "video/x-msvideo",  # .avi
-  "video/x-matroska", # .mkv
-  "video/webm",        # .webm
-  "audio/mpeg",       # .mp3
-  "audio/wav",        # .wav
-  "audio/ogg",        # .ogg
-  "audio/mp4",        # .mp4
-  "audio/x-m4a",      # .m4a
+  "video/mp4",          # .mp4
+  "video/mpeg",         # .mpeg
+  "video/quicktime",    # .mov
+  "video/x-msvideo",    # .avi
+  "video/x-matroska",   # .mkv
+  "video/webm",         # .webm
+  "audio/mpeg",         # .mp3
+  "audio/wav",          # .wav
+  "audio/ogg",          # .ogg
+  "audio/mp4",          # .mp4
+  "audio/x-m4a",        # .m4a
 }
 
 
-@router.post("")
+@router.post("", operation_id="uploadFile")
 async def upload_file(
     file: UploadFile,
     user_session_id: Optional[str] = Form(None, alias="session_id"),
@@ -75,17 +76,29 @@ async def upload_file(
   dest = session_folder / new_filename
 
   # Get uploader's ip
-  ip = get_public_ip()
+  ip = get_client_ip()
 
   # Save the file
   try:
     with dest.open("wb") as buffer:
       shutil.copyfileobj(file.file, buffer)
 
+    # TODO: generate thumbnail in background instead of synchronously, also check if audio file and ignore
+    # Generate a small thumbnail for the video file
+    try:
+      thumbnail_filename = "thumbnail.jpg"
+      thumbnail_path = session_folder / thumbnail_filename
+      await generate_thumbnail(video_path=dest, thumbnail_path=thumbnail_path)
+      print(f"Thumbnail generated. Stored at {thumbnail_path}")
+    except (OSError, IOError) as exc:
+      print(f"Error saving thumbnail image -> ${exc}")
+      thumbnail_filename = None
+
     # Save a session in db
     new_session =  Session(
       id=session_id,
       input=new_filename,
+      # thumbnail=thumbnail_filename,
       created_at=(datetime.now()).isoformat(),
       uploader_ip_addr=ip
     )

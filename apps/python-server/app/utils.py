@@ -1,4 +1,5 @@
 import os
+import subprocess
 import uuid
 import requests
 import json
@@ -6,11 +7,12 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import HTTPException
 from starlette.status import HTTP_404_NOT_FOUND
+from typing import Union
 
 # Don't import any source files here to avoid circular deps
 
 # Only localhost can use this service, not intended as external api
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "::1"]
+ALLOWED_HOSTS = ["http://localhost:3000", "localhost:3000", "localhost", "127.0.0.1", "::1"]
 
 def is_dev():
   load_dotenv()
@@ -19,7 +21,7 @@ def is_dev():
 def generate_session_id():
   return uuid.uuid4().hex
 
-def get_public_ip():
+def get_client_ip():
   services = [
     "https://api.ipify.org",
     "https://ifconfig.me/ip",
@@ -79,3 +81,25 @@ async def session_json_load(session_id: str, file_name):
 
   with open(target_file, "r", encoding="utf-8") as f:
     return json.load(f)
+
+
+async def generate_thumbnail(video_path: Union[str, Path], thumbnail_path: str, width=320, height=240, time="00:00:01"):
+  os.makedirs(os.path.dirname(thumbnail_path), exist_ok=True)
+  # filter_str = (
+  #   "scale=if(gt(a,16/9),320,-1):if(gt(a,16/9),-1,180),crop=320:180"
+  # )
+  filter_str = "scale=w=320:h=180:force_original_aspect_ratio=increase,crop=320:180"
+  result = subprocess.run([
+    "ffmpeg",
+    "-y",
+    "-ss", time,
+    "-i", str(video_path),
+    "-vframes", "1",
+    "-vf", filter_str,
+    "-q:v", "2",
+    thumbnail_path
+  ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+  if result.returncode != 0:
+    print("ffmpeg error output:\n", result.stderr)
+    raise RuntimeError(f"ffmpeg failed with {result.returncode}")

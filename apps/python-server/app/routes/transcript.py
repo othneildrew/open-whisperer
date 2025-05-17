@@ -14,7 +14,7 @@ router = APIRouter(
   responses={404: {"description": "Not found"}}
 )
 
-@router.post("/{session_id}")
+@router.post("/{session_id}", operation_id="transcribeFile")
 async def transcribe_file(session_id: str):
   session = get_session_if_exists(session_id)
   session_dir = get_session_storage_dir(session_id)
@@ -33,14 +33,12 @@ async def transcribe_file(session_id: str):
   # TODO: rm session file on new file uploads
   transcript_file = session_dir / "transcript.json"
 
-  # if transcript_file.exists():
-  #   return await session_json_load(session_id, transcript_file)
+  if transcript_file.exists():
+    return await session_json_load(session_id, transcript_file)
 
   # Create the whisper instance and run the transcriber
   whisperer = WhisperRunner()
   transcript = await whisperer.transcribe(input_file)
-
-  # transcript = await session_json_load(session_id, transcript_file)
 
   # Create the translator instance
   translator = Translator(transcript)
@@ -62,7 +60,7 @@ async def transcribe_file(session_id: str):
   return transcript_with_translations
 
 
-@router.post("/{session_id}/extract")
+@router.post("/{session_id}/extract", operation_id="extractAudioFromVideo")
 async def extract_audio_from_video(session_id: str):
   session = get_session_if_exists(session_id)
 
@@ -94,7 +92,7 @@ async def extract_audio_from_video(session_id: str):
   return {"session_id": session_id, "output": "output.wav"}
 
 
-@router.get("/languages")
+@router.get("/languages", operation_id="getTranscriptSupportedLanguages")
 async def get_supported_languages():
   whisperer = WhisperRunner()
   return await whisperer.langs()

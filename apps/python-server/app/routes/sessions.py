@@ -28,7 +28,11 @@ def raise_session_not_found():
 # No create session, can only be created by uploading a file
 # Also, no updating, can only be updated by uploading new file
 
-@router.get("/{session_id}")
+@router.get("", operation_id="listSessions")
+async def list_sessions(db: Session = Depends(get_db)):
+  return {"data": db.query(Session).all()}
+
+@router.get("/{session_id}", operation_id="getSession")
 async def get_session(session_id: str, db: Session = Depends(get_db)):
   session = db.query(Session).filter(Session.id == session_id).first()
 
@@ -51,7 +55,7 @@ async def get_session(session_id: str, db: Session = Depends(get_db)):
     "expires_at": session.updated_at,
   }
 
-@router.delete("/{session_id}")
+@router.delete("/{session_id}", operation_id="deleteSession")
 async def delete_session(session_id: str, db: Session = Depends(get_db)):
   session = db.query(Session).filter(Session.id == session_id).first()
 

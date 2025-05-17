@@ -4,9 +4,11 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.db import Base, engine
-from app.utils import ALLOWED_HOSTS
+from app.utils import ALLOWED_HOSTS, get_storage_path
 from .routes import sessions, uploads, transcript
 
 development: bool = os.getenv("ENV") == 'development'
@@ -22,7 +24,7 @@ async def lifespan(api: FastAPI):
 
   # Debug print all routes on app start
   print("Registered routes:")
-  for route in app.routes:
+  for route in api.routes:
     print(f"{route.path} -> ({route.name})")
 
   yield
@@ -35,6 +37,13 @@ app = FastAPI(debug=True, lifespan=lifespan)
 # Check host header sent in http request
 app.add_middleware(
   TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS
+)
+
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=["*"],
+  allow_methods=["*"],
+  allow_headers=["*"],
 )
 
 # Actually restrict apis outside of localhost (yes, don't try to use my shit, host it yourself!)
@@ -62,6 +71,9 @@ async def general_exception_handler(request: Request, exc: Exception):
 app.include_router(sessions.router)
 app.include_router(uploads.router)
 app.include_router(transcript.router)
+
+# Serve the static folder with all the files
+app.mount("/media", StaticFiles(directory=get_storage_path()), name="media")
 
 @app.get("/")
 async def hello():
