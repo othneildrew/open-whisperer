@@ -1,0 +1,41 @@
+"use client";
+
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import logo from "../../../public/logo.png";
+import { Button } from "@/components/shad-ui/button";
+import { ImageUp } from "lucide-react";
+import { BiLogoGithub } from "react-icons/bi";
+import { GITHUB_URL } from '@/lib/constants';
+
+export const AppBar = () => {
+  const router = useRouter();
+  return (
+    <nav
+      className={`fixed top-0 z-20 w-full flex justify-between items-center px-4 h-[56px] backdrop-blur-md bg-background/18 border-1 border-b-neutral-800`}
+    >
+      <Image
+        src={logo}
+        alt="Open Whisperer"
+        className="h-[28px] w-auto"
+        draggable={false}
+        unselectable="on"
+        onClick={() => router.push("/")}
+      />
+
+      <div
+        className="flex gap-2 items-center"
+        onClick={() => router.push("/upload")}
+      >
+        <a href={GITHUB_URL} target="_blank" rel="noreferrer">
+          <Button size="icon" variant="ghost">
+            <BiLogoGithub size={24} />
+          </Button>
+        </a>
+        <Button variant="secondary">
+          <ImageUp /> Upload Video
+        </Button>
+      </div>
+    </nav>
+  );
+};
