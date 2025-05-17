@@ -1,0 +1,11 @@
+meta {
+  name: listSessions
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{API_SERVER}}/sessions
+  body: none
+  auth: inherit
+}
