@@ -1,12 +1,20 @@
 import type { ConfigFile } from '@rtk-query/codegen-openapi'
 
+const schemaFile = 'http://localhost:8000/openapi.json';
+
 const config: ConfigFile = {
-  schemaFile: './openapi.json',
+  schemaFile,
   apiFile: './src/baseSplitApi.ts',
   apiImport: 'baseSplitApi',
   outputFile: './dist/openWhispererApi.ts',
   exportName: 'openWhispererApi',
-  hooks: false
+  hooks: true,
+  endpointOverrides: [
+    {
+      pattern: 'transcribeFile',
+      type: 'query',
+    }
+  ],
 }
 
 export default config

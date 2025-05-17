@@ -1,6 +1,9 @@
 import { baseSplitApi as api } from "../src/baseSplitApi";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
+    listSessions: build.query<ListSessionsApiResponse, ListSessionsApiArg>({
+      query: () => ({ url: `/sessions` }),
+    }),
     getSession: build.query<GetSessionApiResponse, GetSessionApiArg>({
       query: (queryArg) => ({ url: `/sessions/${queryArg.sessionId}` }),
     }),
@@ -20,7 +23,7 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.bodyUploadFile,
       }),
     }),
-    transcribeFile: build.mutation<
+    transcribeFile: build.query<
       TranscribeFileApiResponse,
       TranscribeFileApiArg
     >({
@@ -51,6 +54,8 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as openWhispererApi };
+export type ListSessionsApiResponse = /** status 200 Successful Response */ any;
+export type ListSessionsApiArg = void;
 export type GetSessionApiResponse = /** status 200 Successful Response */ any;
 export type GetSessionApiArg = {
   sessionId: string;
@@ -91,3 +96,13 @@ export type BodyUploadFile = {
   file: Blob;
   user_session_id?: string | null;
 };
+export const {
+  useListSessionsQuery,
+  useGetSessionQuery,
+  useDeleteSessionMutation,
+  useUploadFileMutation,
+  useTranscribeFileQuery,
+  useExtractAudioFromVideoMutation,
+  useGetTranscriptSupportedLanguagesQuery,
+  useHelloGetQuery,
+} = injectedRtkApi;
