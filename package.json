@@ -16,7 +16,8 @@
     "run:codegen": "yarn workspace @open-whisperer/rtk-query codegen",
     "app:dev": "yarn workspace @open-whisperer/web-ui dev",
     "app:build": "yarn workspace @open-whisperer/web-ui build",
-    "app:start": "yarn workspace @open-whisperer/rtk-query start"
+    "app:start": "yarn workspace @open-whisperer/rtk-query start",
+    "delete:db": "rm -rf apps/python-server/database apps/python-server/storage"
   },
   "packageManager": "yarn@3.8.7",
   "devDependencies": {
