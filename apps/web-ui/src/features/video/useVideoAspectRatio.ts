@@ -1,7 +1,7 @@
-import { Ref, useEffect, useState, useMemo, RefObject } from "react";
+import { useEffect, useState, useMemo, RefObject } from "react";
 
 export interface UseVideoAspectRatioProps {
-  videoRef: RefObject<HTMLVideoElement> | null;
+  videoRef?: RefObject<HTMLVideoElement>;
 }
 
 export type UseVideoAspectRatioReturnValue = {

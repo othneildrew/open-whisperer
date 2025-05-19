@@ -1,134 +1,96 @@
 "use client";
 
 import {
-  FormEvent,
   Ref,
   useCallback,
   useEffect,
   useRef,
   useState,
-  use, RefObject,
+  RefObject,
+  useMemo,
 } from "react";
 import {
-  useGetTranscriptSupportedLanguagesQuery,
-  useTranscribeFileQuery,
+  useTranscribeFileMutation,
+  useListTranslateSupportedLanguagesQuery,
+  Language,
 } from "@open-whisperer/rtk-query";
-import { AppBar } from "@/components/shad-ui/app-bar";
 import { VideoPlayer } from "@/features/video/video-player";
 import { AudioVisualizer } from "@/features/audio-visualizer/audio-visualizer";
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
+import { SessionIdProvider } from "@/components/providers/session-id-provider";
+import { ScrollArea } from "@/components/shad-ui/scroll-area";
+import { TranscriptToolbar } from "@/components/ui/transcript-toolbar";
+import { Transcript } from "@/components/ui/transcript";
 
 export type PageParams = {
-  session?: string;
+  sessionId: string;
 };
 
-export default function Home() {
-  const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session");
+export default function Editor() {
+  const params = useParams<PageParams>();
+  const sessionId = params.sessionId as string;
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [fromLang, setFromLang] = useState<Language>();
+  const [toLang, setToLang] = useState<Language>();
+  const [transcribeFile, { isLoading: isTranscribing }] =
+    useTranscribeFileMutation();
 
-  // console.log(sessionId);
+  const { data: supportedLangs, isLoading: isLoadingSupportedLanguages } =
+    useListTranslateSupportedLanguagesQuery();
 
-  const videoRef = useRef<RefObject<HTMLVideoElement>>(null);
-  // const { data } = useGetTranscriptSupportedLanguagesQuery();
-  const { data: transcript } = useTranscribeFileQuery(
-    { sessionId: sessionId! },
-    { skip: !sessionId },
+  const languages = useMemo(
+    () => (supportedLangs?.data ?? []) as Language[],
+    [supportedLangs?.data],
   );
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    for (const [key, value] of formData.entries()) {
-      console.log("key:::", key);
-      console.log("value:::", value);
-    }
-
-    console.log("formData:::", formData.entries());
-    const files = form.files;
-
-    // if (files.length !== 1) {
-    //   // throw error a file must be specified, no more than 1
-    // }
-
-    console.log("files:::", { e, files });
-
-    fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("server response:::", data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const handleFileChange = () => {};
-
   const handleTranscribe = useCallback(async () => {
-    setIsLoading(true);
-    const res = await fetch("/api/transcribe", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        file: "a_test.mp3",
-        sourceLang: "es-US",
-        targetLang: "en-US",
-      }),
+    const fromLangCode = fromLang?.code;
+    const toLangCode = toLang?.code;
+
+    await transcribeFile({
+      sessionId,
+      fromLang: fromLangCode !== "auto-detected" ? fromLangCode : undefined,
+      toLang: toLangCode !== "auto-detected" ? toLangCode : undefined,
     });
+  }, [fromLang?.code, sessionId, toLang?.code, transcribeFile]);
 
-    const data = await res.json();
+  const isLoading = isLoadingSupportedLanguages;
 
-    console.log("server response:::", data);
-
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    // console.log("video ref:::", videoRef.current);
-    console.log('transcript:::', transcript);
-  }, [transcript]);
+  // useEffect(() => {
+  //   // console.log("video ref:::", videoRef.current);
+  //   console.log("transcript:::", transcript);
+  // }, [transcript]);
 
   return (
-    <main className="flex-1 grid grid-rows-[56px_1fr_200px]">
-      <AppBar />
-
-      <div className="border-2">
-        <div className="h-full grid grid-cols-2">
-          <div className="flex flex-col border-r-1 border-white/78">
-            subtitles and translations goes here
+    <SessionIdProvider>
+      <div className="flex-1 grid grid-rows-[1fr_200px] min-h-0">
+        <div className="h-[calc(100dvh-200px-56px)] grid grid-cols-2 min-h-0">
+          <div className="flex flex-col items-stretch min-h-0">
+            <TranscriptToolbar
+              isLoading={isLoadingSupportedLanguages}
+              languages={languages}
+              isTranscribing={isTranscribing}
+              handleTranscribe={handleTranscribe}
+              onFromLangChange={setFromLang}
+              onToLangChange={setToLang}
+            />
+            <div className="flex-1 min-h-0">
+              <ScrollArea className="h-full">
+                <Transcript />
+              </ScrollArea>
+            </div>
           </div>
-          <div className="flex flex-col justify-center bg-black">
+
+          <div className="flex min-h-0 flex-col justify-center items-center">
             <VideoPlayer ref={videoRef} />
           </div>
         </div>
+
+        <div className="flex flex-1 border-t-1">
+          {/*<div className="border-t-1 border-b-1 h-[38px]"></div>*/}
+          {/*<AudioVisualizer videoRef={videoRef} />*/}
+        </div>
       </div>
-
-      <div className="border-pink-400">
-        <div className="border-t-1 border-b-1 h-[38px]">trackbar</div>
-        <AudioVisualizer videoRef={videoRef} />
-      </div>
-
-      {/*<div>*/}
-      {/*  <form className="" onSubmit={handleSubmit}>*/}
-      {/*    <input name="sourceLang" defaultValue="es" hidden />*/}
-      {/*    <input name="targetLang" defaultValue="en" hidden />*/}
-      {/*    <input name="file" type="file" id="file" onChange={handleFileChange} accept="video/*,audio/*" />*/}
-      {/*    <button type="submit">Upload</button>*/}
-      {/*  </form>*/}
-      {/*</div>*/}
-
-      {/*<div>*/}
-      {/*  <button onClick={handleTranscribe} disabled={isLoading}>Transcribe </button>*/}
-      {/*  {isLoading && <p className="text-amber-500">Transcribing...</p>}*/}
-      {/*</div>*/}
-    </main>
+    </SessionIdProvider>
   );
 }

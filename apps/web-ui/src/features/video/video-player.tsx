@@ -1,29 +1,40 @@
-import { RefObject, useEffect, useState } from 'react';
-import { useVideoAspectRatio } from '@/features/video/useVideoAspectRatio';
+"use client";
+
+import { RefObject, useEffect, useState } from "react";
+import { useGetSessionQuery } from "@open-whisperer/rtk-query";
+import { useSessionId } from "@/components/providers/session-id-provider";
+import { SERVER_MEDIA_URL } from "@/lib/constants";
 
 export interface VideoPlayerProps {
-  ref?: RefObject<HTMLVideoElement> | null;
+  ref: RefObject<HTMLVideoElement | null>;
 }
 
-export const VideoPlayer = ({ ref: forwardedRef }: VideoPlayerProps) => {
-  const { tailwindClass, ratio } = useVideoAspectRatio(forwardedRef);
-  const [aspectClass, setAspectClass] = useState<string>('aspect-class');
+export const VideoPlayer = ({ ref }: VideoPlayerProps) => {
+  const sessionId = useSessionId();
+  const {
+    data: session,
+    isLoading,
+    isSuccess,
+  } = useGetSessionQuery(sessionId!, { skip: !sessionId });
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('forwarded ref:::', forwardedRef);
-    
-    console.log(':::::', { tailwindClass, ratio })
-
-  }, [forwardedRef, ratio, tailwindClass]);
-
-
+    if (!isLoading && isSuccess && session?.id && session?.input) {
+      setVideoUrl(`${SERVER_MEDIA_URL}/${session.id}/${session.input}`);
+    }
+  }, [isLoading, isSuccess, session?.id, session?.input]);
 
   return (
-    <div className={`flex bg-black ${tailwindClass} max-w-[100%]`}>
-      <video ref={forwardedRef} controls playsInline className="w-full h-full object-contain">
-        <source src="/mov_bbb.mp4" type="video/mp4" />
-        Your browser does not support the video player
-      </video>
+    <div className="min-h-0 flex-1 flex justify-center items-center w-full bg-black">
+      {videoUrl && (
+        <video ref={ref} controls className="max-h-full max-w-full w-full h-full object-contain">
+          <source
+            src={videoUrl}
+            type={`video/${((session?.input as string) || "").split(".")[1]}`}
+          />
+          Your browser does not support the video player
+        </video>
+      )}
     </div>
   );
-}
+};

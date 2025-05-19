@@ -8,15 +8,17 @@ import { WaveLoaderSkeleton } from "@/components/skeletons/wave-loader-skeleton"
 import { useRouter } from "next/navigation";
 import { ErrorCard } from "@/components/ui/error-card";
 import { Skeleton } from "@/components/shad-ui/skeleton";
+import { Button } from "@/components/shad-ui/button";
 
-export default function EditorPage() {
+export default function Page() {
   const router = useRouter();
-  const { data, isLoading, isError } = useListSessionsQuery();
+  const { data, isLoading, isFetching, isError, isSuccess } =
+    useListSessionsQuery();
 
   return (
     <>
       <ScrollArea className="flex-1">
-        <div className="container max-w-6xl mx-auto py-8">
+        <div className="container max-w-6xl mx-auto py-8 px-2 sm:px-4 md:px-5">
           <div className="py-6">
             {isLoading ? (
               <Skeleton className="mb-2 w-[100px] h-[32px]" />
@@ -28,15 +30,21 @@ export default function EditorPage() {
             ) : (
               <p>
                 All uploaded videos are public and will be deleted after 24
-                hours.Report abuse at codeguydrew+abuse@gmail.com
+                hours. Report abuse at codeguydrew+abuse@gmail.com
               </p>
             )}
           </div>
 
           {isError && <ErrorCard />}
 
-          <div className="grid grid-cols-4 gap-4">
-            {isLoading ? (
+          {isSuccess && data?.data.length === 0 && (
+            <Button onClick={() => router.push("/upload")}>
+              Upload your first video
+            </Button>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {isLoading || isFetching ? (
               <>
                 <CardSkeleton />
                 <CardSkeleton />
@@ -46,11 +54,12 @@ export default function EditorPage() {
             ) : (
               <>
                 {!isError
-                  ? data?.data?.map(({ id, created_at }) => (
+                  ? data?.data?.map(({ id, input_file_name, thumbnail }) => (
                       <MediaCard
                         key={id}
-                        thumbnail={undefined}
-                        title="jla sdfjla sjdlfjasdf"
+                        id={id}
+                        thumbnail={thumbnail}
+                        title={input_file_name}
                         onClick={() => router.push(`/s/${id}`)}
                       />
                     ))

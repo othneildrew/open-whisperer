@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Roboto } from "next/font/google";
 import { GlobalProvider } from "@/components/providers/global-provider";
-import { AppBar } from "@/components/shad-ui/app-bar";
+import { AppBar } from "@/components/ui/app-bar";
 
 const roboto = Roboto({
   variable: "--font-roboto",
