@@ -1,0 +1,15 @@
+meta {
+  name: getTranscript
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{API_SERVER}}/transcripts/:session_id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  session_id: 66fb6f52b1cb42038e6e47dc126f61c2
+}

@@ -6,7 +6,7 @@ from app.services.transcriber import WhisperRunner
 
 router = APIRouter(
   prefix="/languages",
-  tags=["languages"],
+  tags=["Language"],
   responses={404: {"description": "Not found"}}
 )
 

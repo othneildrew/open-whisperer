@@ -6,12 +6,12 @@ from app.services.translator import Translator
 from app.utils import raise_not_found_exception, get_session_storage_dir, session_json_load, extract_audio_from_video
 
 router = APIRouter(
-  prefix="/transcript",
-  tags=["transcript"],
+  prefix="/transcripts",
+  tags=["Transcript"],
   responses={404: {"description": "Not found"}}
 )
 
-@router.get("/{session_id", operation_id="getTranscript")
+@router.get("/{session_id}", operation_id="getTranscript")
 async def get_transcript_file(session_id: str):
   session = get_session_if_exists(session_id)
 

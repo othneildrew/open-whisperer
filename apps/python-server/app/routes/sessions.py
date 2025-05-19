@@ -9,7 +9,7 @@ from app.utils import get_storage_path
 
 router = APIRouter(
   prefix="/sessions",
-  tags=["sessions"],
+  tags=["Session"],
   dependencies=[Depends(get_db)],
   responses={404: {"description": "Not found"}}
 )
@@ -22,17 +22,11 @@ def get_session_if_exists(session_id: str):
 # No create session, can only be created by uploading a file
 # Also, no updating, can only be updated by uploading new file
 
-@router.get(
-  "",
-  operation_id="listSessions"
-)
+@router.get("", operation_id="listSessions")
 async def list_sessions(db: Session = Depends(get_db)):
   return {"data": db.query(Session).all()}
 
-@router.get(
-  "/{session_id}",
-  operation_id="getSession"
-)
+@router.get("/{session_id}", operation_id="getSession")
 async def get_session(session_id: str, db: Session = Depends(get_db)):
   session = db.query(Session).filter(Session.id == session_id).first()
 

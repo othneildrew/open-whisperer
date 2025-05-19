@@ -89,6 +89,6 @@ static_dir = get_storage_path() / "media"
 static_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/media", StaticFiles(directory=get_storage_path()), name="media")
 
-@app.get("/")
+@app.get("/", operation_id="sayHello")
 async def hello():
   return {"message": "Hello World"}

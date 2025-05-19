@@ -21,19 +21,14 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getTranscript: build.query<GetTranscriptApiResponse, GetTranscriptApiArg>({
-      query: (queryArg) => ({
-        url: `/transcript/{session_id`,
-        params: {
-          session_id: queryArg,
-        },
-      }),
+      query: (queryArg) => ({ url: `/transcripts/${queryArg}` }),
     }),
     transcribeFile: build.mutation<
       TranscribeFileApiResponse,
       TranscribeFileApiArg
     >({
       query: (queryArg) => ({
-        url: `/transcript/${queryArg.sessionId}`,
+        url: `/transcripts/${queryArg.sessionId}`,
         method: "POST",
         params: {
           from_lang: queryArg.fromLang,
@@ -53,7 +48,7 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: () => ({ url: `/languages/translate` }),
     }),
-    helloGet: build.query<HelloGetApiResponse, HelloGetApiArg>({
+    sayHello: build.query<SayHelloApiResponse, SayHelloApiArg>({
       query: () => ({ url: `/` }),
     }),
   }),
@@ -85,8 +80,8 @@ export type ListTranscriptSupportedLanguagesApiArg = void;
 export type ListTranslateSupportedLanguagesApiResponse =
   /** status 200 Successful Response */ LanguageResponse;
 export type ListTranslateSupportedLanguagesApiArg = void;
-export type HelloGetApiResponse = /** status 200 Successful Response */ any;
-export type HelloGetApiArg = void;
+export type SayHelloApiResponse = /** status 200 Successful Response */ any;
+export type SayHelloApiArg = void;
 export type ValidationError = {
   loc: (string | number)[];
   msg: string;
@@ -115,5 +110,5 @@ export const {
   useTranscribeFileMutation,
   useListTranscriptSupportedLanguagesQuery,
   useListTranslateSupportedLanguagesQuery,
-  useHelloGetQuery,
+  useSayHelloQuery,
 } = injectedRtkApi;

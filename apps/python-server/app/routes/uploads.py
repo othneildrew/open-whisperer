@@ -13,7 +13,7 @@ from app.utils import generate_session_id, get_storage_path, delete_existing_inp
 
 router = APIRouter(
   prefix="/uploads",
-  tags=["uploads", "sessions"],
+  tags=["Session"],
   dependencies=[Depends(get_db)],
   responses={404: {"description": "Not found"}}
 )
@@ -35,7 +35,7 @@ ALLOWED_MEDIA_TYPES = {
 }
 
 
-@router.post("", operation_id="uploadFile", tags=["sessions"])
+@router.post("", operation_id="uploadFile")
 async def upload_file(
     file: UploadFile = File(...),
     user_session_id: Optional[str] = Form(None, alias="session_id"),
