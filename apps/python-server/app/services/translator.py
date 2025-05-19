@@ -2,18 +2,17 @@ import argostranslate.package
 import argostranslate.translate
 
 class Translator:
-  def __init__(self, transcript):
+  def __init__(self, transcript, source_lang: str, target_lang: str):
     self.transcript = transcript
     self.delimiter = "\n"
-
-    from_code = "es"
-    to_code = "en"
+    self.source_lang = source_lang
+    self.target_lang = target_lang
 
     argostranslate.package.update_package_index()
     available_packages = argostranslate.package.get_available_packages()
     package_to_install = next(
       filter(
-        lambda x: x.from_code == from_code and x.to_code == to_code, available_packages
+        lambda x: x.from_code == self.source_lang and x.to_code == self.target_lang, available_packages
       )
     )
     argostranslate.package.install_from_path(package_to_install.download())
@@ -32,7 +31,7 @@ class Translator:
 
     return lines
 
-  async def run(self, source_lang: str, target_lang: str):
+  async def run(self):
     # TODO: run check to make sure the language is supported. Should probably have that return in transcript/languages instead of what whisper supprots
     # get the transcript
     # convert to basic csv file format with text only with only text content
@@ -43,7 +42,7 @@ class Translator:
     print(f"simple_csv_format: {simple_csv_format}")
 
     # Get each line and insert it into the transcript data
-    translated = argostranslate.translate.translate(simple_csv_format, "es", "en")
+    translated = argostranslate.translate.translate(simple_csv_format, self.source_lang, self.target_lang)
     print(f"translated text: {translated}")
 
     translated_lines = await self.__unflatten_json_text_content(translated)
@@ -53,7 +52,7 @@ class Translator:
       sub["translatedText"] = line
 
     # Update the transcript meta to include "language_to"
-    self.transcript["meta"]["language_from"] = source_lang
-    self.transcript["meta"]["language_to"] = target_lang
+    self.transcript["meta"]["language_from"] = self.source_lang
+    self.transcript["meta"]["language_to"] = self.target_lang
 
     return self.transcript

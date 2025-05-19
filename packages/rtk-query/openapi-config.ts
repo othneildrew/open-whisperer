@@ -9,12 +9,7 @@ const config: ConfigFile = {
   outputFile: './dist/openWhispererApi.ts',
   exportName: 'openWhispererApi',
   hooks: true,
-  endpointOverrides: [
-    {
-      pattern: 'transcribeFile',
-      type: 'query',
-    }
-  ],
+  flattenArg: true,
 }
 
 export default config

@@ -1,18 +1,19 @@
 import shutil
+import asyncio
 from datetime import datetime
 from typing import Optional
 from pathlib import Path
-from fastapi import APIRouter, UploadFile, HTTPException, Form, Depends
+from fastapi import APIRouter, UploadFile, File, HTTPException, Form, Depends
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 
 from app.models.session import Session
 from app.db import get_db
 from app.utils import generate_session_id, get_storage_path, delete_existing_input_files, get_client_ip, \
-  generate_thumbnail
+  generate_thumbnail, extract_audio_from_video
 
 router = APIRouter(
   prefix="/uploads",
-  tags=["uploads"],
+  tags=["uploads", "sessions"],
   dependencies=[Depends(get_db)],
   responses={404: {"description": "Not found"}}
 )
@@ -34,9 +35,9 @@ ALLOWED_MEDIA_TYPES = {
 }
 
 
-@router.post("", operation_id="uploadFile")
+@router.post("", operation_id="uploadFile", tags=["sessions"])
 async def upload_file(
-    file: UploadFile,
+    file: UploadFile = File(...),
     user_session_id: Optional[str] = Form(None, alias="session_id"),
     db = Depends(get_db)
 ):
@@ -64,16 +65,16 @@ async def upload_file(
 
   # Generate a session for the file and create folder, every new upload is considered a session
   session_id = user_session_id or generate_session_id()
-  session_folder = dest_dir / session_id
-  session_folder.mkdir(parents=True, exist_ok=True)
+  session_dir = dest_dir / session_id
+  session_dir.mkdir(parents=True, exist_ok=True)
 
   # Clean up any old input files before saving new one
   # TODO: may just need to delete everything, if existing translations and diff vid can cause issues
-  delete_existing_input_files(session_folder)
+  delete_existing_input_files(session_dir)
 
   # Rename the file to "input.<ext>"
   new_filename = "input" + Path(file.filename).suffix
-  dest = session_folder / new_filename
+  dest = session_dir / new_filename
 
   # Get uploader's ip
   ip = get_client_ip()
@@ -87,18 +88,22 @@ async def upload_file(
     # Generate a small thumbnail for the video file
     try:
       thumbnail_filename = "thumbnail.jpg"
-      thumbnail_path = session_folder / thumbnail_filename
+      thumbnail_path = session_dir / thumbnail_filename
       await generate_thumbnail(video_path=dest, thumbnail_path=thumbnail_path)
       print(f"Thumbnail generated. Stored at {thumbnail_path}")
     except (OSError, IOError) as exc:
       print(f"Error saving thumbnail image -> ${exc}")
       thumbnail_filename = None
 
+    file_size = dest.stat().st_size
+
     # Save a session in db
     new_session =  Session(
       id=session_id,
       input=new_filename,
-      # thumbnail=thumbnail_filename,
+      input_file_name=file.filename,
+      input_file_size=file_size,
+      thumbnail=thumbnail_filename,
       created_at=(datetime.now()).isoformat(),
       uploader_ip_addr=ip
     )
@@ -106,6 +111,17 @@ async def upload_file(
     db.add(new_session)
     db.commit()
     db.refresh(new_session)
+
+    # Generate the .wav file in the background
+    input_file = session_dir / dest
+    output_file = session_dir / "input.wav"
+
+    if input_file.exists():
+      asyncio.create_task(
+        extract_audio_from_video(input_file, output_file)
+      )
+      print("Started extracting audio in background")
+
 
   except (OSError, IOError) as exc:
     raise HTTPException(
@@ -120,6 +136,6 @@ async def upload_file(
     "uploader_ip_addr": ip,
     "file": {
       "file_name": file.filename,
-      "file_size": dest.stat().st_size,
+      "file_size": file_size,
     }
   }

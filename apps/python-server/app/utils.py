@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import HTTPException
-from starlette.status import HTTP_404_NOT_FOUND
+from starlette.status import HTTP_404_NOT_FOUND, HTTP_500_INTERNAL_SERVER_ERROR
 from typing import Union
 
 # Don't import any source files here to avoid circular deps
@@ -38,6 +38,12 @@ def get_client_ip():
       continue
   return '<unknown_ip>'
 
+def raise_not_found_exception(resource: str):
+  raise HTTPException(
+    status_code=HTTP_404_NOT_FOUND,
+    detail=f"${resource} not found"
+  )
+
 def get_project_root_path():
   return Path(__file__).resolve().parent.parent
 
@@ -54,12 +60,6 @@ def get_session_storage_dir(session_id: str):
 def delete_existing_input_files(dest_dir: Path):
   for existing_file in dest_dir.glob("input.*"):
     existing_file.unlink()
-
-def raise_file_not_found(file):
-  raise HTTPException(
-    status_code=HTTP_404_NOT_FOUND,
-    detail=f"{file} not found. Endpoints should be called according to docs to ensure dependencies exists to properly output files"
-  )
 
 async def session_json_save(session_id: str, file_name: str, json_data):
   session_dir = get_session_storage_dir(session_id)
@@ -83,8 +83,9 @@ async def session_json_load(session_id: str, file_name):
     return json.load(f)
 
 
-async def generate_thumbnail(video_path: Union[str, Path], thumbnail_path: str, width=320, height=240, time="00:00:01"):
+async def generate_thumbnail(video_path: Union[str, Path], thumbnail_path: str, width=320, height=240, time="00:00:04"):
   os.makedirs(os.path.dirname(thumbnail_path), exist_ok=True)
+  # Desired scale to fit aspect ratio not working rn
   # filter_str = (
   #   "scale=if(gt(a,16/9),320,-1):if(gt(a,16/9),-1,180),crop=320:180"
   # )
@@ -103,3 +104,25 @@ async def generate_thumbnail(video_path: Union[str, Path], thumbnail_path: str, 
   if result.returncode != 0:
     print("ffmpeg error output:\n", result.stderr)
     raise RuntimeError(f"ffmpeg failed with {result.returncode}")
+
+async def extract_audio_from_video(input_file: Path, output_file: Path):
+  """
+  Generates a .wav file with industry recommended settings to optimize the transcription and diarization processes.
+  :param input_file:
+  :param output_file:
+  :return:
+  """
+  try:
+    cmd = [
+      "ffmpeg",
+      "-y",               # run non interactively, overwrite the previous file
+      "-i", input_file,   # input file
+      "-ar", "16000",     # recommended 16kHz sampling rate for transcriptions & diarization
+      "-ac", "1",         # mono channel
+      "-f", "wav",        # format (wav)
+      output_file
+    ]
+
+    subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  except (OSError, IOError) as exc:
+    print(f"Failed to extract and save audio file {str(exc)}")

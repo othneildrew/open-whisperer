@@ -1,0 +1,11 @@
+meta {
+  name: listTranslateSupportedLanguages
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{API_SERVER}}/languages/translate
+  body: none
+  auth: inherit
+}

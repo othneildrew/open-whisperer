@@ -6,4 +6,5 @@ const baseUrl = 'http://localhost:8000';
 export const baseSplitApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl }),
   endpoints: () => ({}),
+  tagTypes: ['sessions'],
 })

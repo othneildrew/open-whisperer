@@ -10,17 +10,13 @@ dest_dir = root_dir / "database/sqlite"
 
 # Create dir if it doesn't exist
 dest_dir.mkdir(parents=True, exist_ok=True)
-
 db_file = dest_dir / os.getenv("SQLITE_DATABASE", "app.db")
 
-DATABASE_URL = f"sqlite:///{db_file}"
-
 engine = create_engine(
-  DATABASE_URL, connect_args={"check_same_thread": False}
+  f"sqlite:///{db_file}", connect_args={"check_same_thread": False}
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base = declarative_base()
 
 def get_db():

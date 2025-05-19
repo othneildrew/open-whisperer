@@ -18,3 +18,4 @@ resemblyzer
 argostranslate
 pysrt
 srt
+pydantic

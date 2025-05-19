@@ -19,20 +19,20 @@ def get_session_if_exists(session_id: str):
   session = db.query(Session).filter(Session.id == session_id).first()
   return session if session else False
 
-def raise_session_not_found():
-  raise HTTPException(
-    status_code=HTTP_404_NOT_FOUND,
-    detail=f"Session not found"
-  )
-
 # No create session, can only be created by uploading a file
 # Also, no updating, can only be updated by uploading new file
 
-@router.get("", operation_id="listSessions")
+@router.get(
+  "",
+  operation_id="listSessions"
+)
 async def list_sessions(db: Session = Depends(get_db)):
   return {"data": db.query(Session).all()}
 
-@router.get("/{session_id}", operation_id="getSession")
+@router.get(
+  "/{session_id}",
+  operation_id="getSession"
+)
 async def get_session(session_id: str, db: Session = Depends(get_db)):
   session = db.query(Session).filter(Session.id == session_id).first()
 
@@ -47,10 +47,13 @@ async def get_session(session_id: str, db: Session = Depends(get_db)):
     "input": session.input,
     "audio": session.audio,
     "output": session.output,
-    "output_srt": session.output,
-    "output_json": session.output,
+    # "output_srt": session.output,
+    # "output_json": session.output,
     "uploader_ip_addr": session.uploader_ip_addr,
-    "status": "<TODO>",
+    "input_file_name": session.input_file_name,
+    "input_file_size": session.input_file_size,
+    "thumbnail": session.thumbnail,
+    # "status": "<TODO>",
     "created_at": session.created_at,
     "expires_at": session.updated_at,
   }
@@ -62,10 +65,6 @@ async def delete_session(session_id: str, db: Session = Depends(get_db)):
   # Allow to silently fail if no session, better for UI error handling I think
   if not session:
     return None
-  #   raise HTTPException(
-  #     status_code=HTTP_404_NOT_FOUND,
-  #     detail="Session not found"
-  #   )
 
   # Delete the folder if it exists
   session_dir = get_storage_path() / session_id
