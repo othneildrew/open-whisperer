@@ -21,6 +21,7 @@ import { SessionIdProvider } from "@/components/providers/session-id-provider";
 import { ScrollArea } from "@/components/shad-ui/scroll-area";
 import { TranscriptToolbar } from "@/components/ui/transcript-toolbar";
 import { Transcript } from "@/components/ui/transcript";
+import { BlockButton } from '@/components/ui/block-button';
 
 export type PageParams = {
   sessionId: string;
@@ -76,9 +77,10 @@ export default function Editor() {
             />
             <div className="flex-1 min-h-0">
               <ScrollArea className="h-full">
-                <Transcript />
+                <Transcript transcribing={isTranscribing} />
               </ScrollArea>
             </div>
+            <BlockButton />
           </div>
 
           <div className="flex min-h-0 flex-col justify-center items-center">
@@ -86,9 +88,9 @@ export default function Editor() {
           </div>
         </div>
 
-        <div className="flex flex-1 border-t-1">
+        <div className="flex flex-1 border-t-1 min-h-0">
           {/*<div className="border-t-1 border-b-1 h-[38px]"></div>*/}
-          {/*<AudioVisualizer videoRef={videoRef} />*/}
+          <AudioVisualizer videoRef={videoRef} />
         </div>
       </div>
     </SessionIdProvider>

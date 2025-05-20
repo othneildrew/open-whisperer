@@ -62,7 +62,7 @@ export const SupportedLanguageDropdown = ({
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" disabled={isLoading}>
           <small className="text-muted-foreground">{helperText}:</small>
-          {isLoading ? "Loading..." : <>{selected.name}</>}
+          {selected.name}
           <ChevronDown size={16} />
         </Button>
       </DropdownMenuTrigger>

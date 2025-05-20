@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useGetTranscriptQuery } from "@open-whisperer/rtk-query";
 import { Textarea } from "@/components/shad-ui/textarea";
 import { ArrowRight } from "lucide-react";
-import { secondsToTimestamp } from "@/lib/utils";
+import { secondsToSrtTimestamp } from "@/lib/utils";
 import { useSessionId } from "@/components/providers/session-id-provider";
 import { TranscriptSkeleton } from "@/components/skeletons/transcript-skeleton";
 
@@ -11,7 +11,7 @@ export interface ITranscript {
   end: number;
   number: number;
   text: string;
-  translatedText: string | null;
+  translated_text: string | null;
 }
 
 export interface TranscriptProps {
@@ -45,22 +45,34 @@ export const Transcript = ({ transcribing }: TranscriptProps) => {
   }, [transcript]);
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 bg-muted/30">
       {hasTranscript ? (
         <>
-          {events.map(({ start, end, number, text, translatedText }) => (
+          {events.map(({ start, end, number, text, translated_text }) => (
             <div
               key={number}
-              className="border-b-1 px-4 py-2 border-neutral-700"
+              className="px-4 pb-4 pt-2 border-b-1 border-neutral-900"
             >
-              <div className="flex gap-2 font-mono">{number}
-                <p>{secondsToTimestamp(start)}</p> -->
-                <p>{secondsToTimestamp(end)}</p>
-              </div>
-              <div className="flex flex-1 justify-between items-center">
-                <Textarea value={text} readOnly />
-                <ArrowRight className="px-2 shrink-0" size={26} />
-                <Textarea value={translatedText || ""} readOnly />
+              <p className="pb-2">
+                <strong className="dark:text-white/90">{number}</strong> {secondsToSrtTimestamp(start, end)}
+              </p>
+              <div
+                key={number}
+                className="flex flex-1 gap-x-2 items-stretch h-full"
+              >
+                <div className="flex-1 overflow-auto min-h-[80px]">
+                  <Textarea value={text} readOnly className="h-full" />
+                </div>
+
+                <ArrowRight className="shrink-0 self-center" size={18} />
+
+                <div className="flex-1 overflow-auto min-h-[80px]">
+                  <Textarea
+                    value={translated_text || ""}
+                    readOnly
+                    className="h-full"
+                  />
+                </div>
               </div>
             </div>
           ))}

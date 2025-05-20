@@ -103,10 +103,10 @@ export const AudioVisualizer = ({ videoRef }: AudioVisualizerProps) => {
   }, [isReady, videoRef]);
 
   return (
-    <div className="flex-1 h-[200px] overflow-hidden">
+    <div className="flex-1 h-full ">
       <div
         ref={containerRef}
-        className="relative h-full] overflow-y-hidden overflow-x-scroll"
+        className="relative h-full overflow-y-hidden"
       />
 
       {/*<div className="flex justify-end items-center border-t-1">*/}

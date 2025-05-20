@@ -4,6 +4,7 @@ import {
 } from "@/components/ui/supported-language-dropdown";
 import { Button } from "@/components/shad-ui/button";
 import { ThreeDots } from "react-loader-spinner";
+import { ArrowDown } from 'lucide-react';
 
 export interface TranscriptToolbarProps {
   languages: SupportedLanguageDropdownProps["languages"];
@@ -22,7 +23,7 @@ export const TranscriptToolbar = ({
   isTranscribing,
   handleTranscribe,
 }: TranscriptToolbarProps) => (
-  <div className="px-4 flex gap-5 justify-between items-center h-[48px] border-1 border-b-neutral-600">
+  <div className="px-4 flex gap-5 justify-between items-center h-[48px] border-b-1 border-b-neutral-800">
     <div className="flex gap-2 items-center">
       Translate:
       <SupportedLanguageDropdown
@@ -50,6 +51,7 @@ export const TranscriptToolbar = ({
       ) : (
         "Generate Transcript"
       )}
+      <ArrowDown size={16} />
     </Button>
   </div>
 );
