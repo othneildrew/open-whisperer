@@ -1,8 +1,13 @@
+import asyncio
+import re
 import os
 import subprocess
 import uuid
+from email.policy import strict
+
 import requests
 import json
+import ffmpeg
 from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import HTTPException
@@ -116,13 +121,30 @@ async def extract_audio_from_video(input_file: Path, output_file: Path):
     cmd = [
       "ffmpeg",
       "-y",               # run non interactively, overwrite the previous file
-      "-i", input_file,   # input file
+      "-i", str(input_file),   # input file
       "-ar", "16000",     # recommended 16kHz sampling rate for transcriptions & diarization
       "-ac", "1",         # mono channel
       "-f", "wav",        # format (wav)
-      output_file
+      str(output_file)
     ]
 
     subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   except (OSError, IOError) as exc:
     print(f"Failed to extract and save audio file {str(exc)}")
+
+async def add_subtitle_to_video(input_path: Path, output_path: Path, subtitle_path: Path):
+  input_file = input_path.as_posix()
+  output = output_path.as_posix()
+  subtitle = subtitle_path.as_posix()
+
+  # Set up the video input
+  in_video_stream = ffmpeg.input(input_file)
+
+  # Add subtitles to video stream
+  stream = ffmpeg.output(
+    in_video_stream,
+    output,
+    vf=f"subtitles='{subtitle.replace('\\', '\\\\').replace(':', '\\:')}'"
+  )
+
+  ffmpeg.run(stream, overwrite_output=True)

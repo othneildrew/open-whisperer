@@ -1,13 +1,14 @@
+from enum import Enum
+
 import srt
-import json
 from datetime import timedelta
 
-# class SrtFormatter:
-#   # def __init__(self):
-#   async def to_json(self):
-#
+class TextVersion(Enum):
+  TEXT = "text"
+  TRANSLATED = "translated_text"
 
-def srt_to_json(subs):
+
+async def srt_to_json(subs):
   return [
     {
       "number": i,
@@ -18,16 +19,13 @@ def srt_to_json(subs):
     for i, sub in enumerate(subs, start=1)
   ]
 
-def json_to_srt(segments):
+async def json_to_srt(segments, text_version: TextVersion = TextVersion.TRANSLATED):
   return [
     srt.Subtitle(
       index=i,
       start=timedelta(seconds=item["start"]),
       end=timedelta(seconds=item["end"]),
-      content=item["text"]
+      content=item["translated_text"]
     )
     for i, item in enumerate(segments, start=1)
   ]
-
-def json_flatten_text_content(json_data, delimiter = "\n"):
-  return False

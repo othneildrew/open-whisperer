@@ -32,6 +32,7 @@ class Translator:
     return lines
 
   async def run(self):
+    print("Started running translator")
     # TODO: run check to make sure the language is supported. Should probably have that return in transcript/languages instead of what whisper supprots
     # get the transcript
     # convert to basic csv file format with text only with only text content
@@ -39,20 +40,24 @@ class Translator:
 
     # Run the translation on the entire csv file
 
-    print(f"simple_csv_format: {simple_csv_format}")
+    # print(f"simple_csv_format: {simple_csv_format}")
 
     # Get each line and insert it into the transcript data
     translated = argostranslate.translate.translate(simple_csv_format, self.source_lang, self.target_lang)
-    print(f"translated text: {translated}")
+    # print(f"translated text: {translated}")
 
     translated_lines = await self.__unflatten_json_text_content(translated)
+    print("Finished translating text input")
 
     # Update the translated text value
     for sub, line in zip(self.transcript["data"], translated_lines):
-      sub["translatedText"] = line
+      sub["translated_text"] = line
+
+    print("Joining translated_text to transcript")
 
     # Update the transcript meta to include "language_to"
     self.transcript["meta"]["language_from"] = self.source_lang
     self.transcript["meta"]["language_to"] = self.target_lang
+    print("Set transcript meta data for language_from & language_to")
 
     return self.transcript

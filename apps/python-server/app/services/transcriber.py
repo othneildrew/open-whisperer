@@ -46,7 +46,7 @@ class WhisperRunner:
         "start": segment.start,
         "end": segment.end,
         "text": segment.text.strip(),
-        "translatedText": None
+        "translated_text": None
       }
       for i, segment in enumerate(segments, start=1)
     ]

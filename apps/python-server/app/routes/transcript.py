@@ -1,9 +1,12 @@
+import srt
 from fastapi import APIRouter, Query
 
 from app.routes.sessions import get_session_if_exists
 from app.services.transcriber import WhisperRunner, persist_transcript
 from app.services.translator import Translator
-from app.utils import raise_not_found_exception, get_session_storage_dir, session_json_load, extract_audio_from_video
+from app.services.srt import json_to_srt
+from app.utils import raise_not_found_exception, get_session_storage_dir, session_json_load, extract_audio_from_video, \
+  add_subtitle_to_video
 
 router = APIRouter(
   prefix="/transcripts",
@@ -84,11 +87,10 @@ async def transcribe_file(
     transcript["meta"]["language_to"] = source_lang
     return transcript
 
-
-  print(f"source_lang::: {source_lang}")
-  print(f"target_lang::: {target_lang}")
   print(f"stored_from::: {stored_from}")
+  print(f"source_lang::: {source_lang}")
   print(f"stored_to::: {stored_to}")
+  print(f"target_lang::: {target_lang}")
 
   # Create the translator instance
   translator = Translator(transcript=transcript, source_lang=source_lang, target_lang=target_lang)
@@ -99,6 +101,32 @@ async def transcribe_file(
   # Store the new transcript file with translations
   # TODO: Yea, probably not the best way to do things, but my goal is to get this working in 3-4 days
   await persist_transcript(session_id, transcript_with_translations)
+
+  # Generate and save the .srt transcript file to use for video captions
+  srt_blocks = await json_to_srt(transcript_with_translations["data"])
+  srt_content = srt.compose(srt_blocks)
+  srt_dest = session_dir / f"{target_lang}.srt"
+
+  with open(srt_dest, "w", encoding="UTF-8") as f:
+    f.write(srt_content)
+    f.close()
+
+  print(srt_content)
+
+  # Output a new video with the translated subtitles
+  video_input = session_dir / session.input
+  video_output = session_dir / "output.mp4"
+
+  print(f"Generating captioned video for {target_lang}")
+
+  if srt_dest.exists():
+    await add_subtitle_to_video(
+      input_path=video_input,
+      output_path=video_output,
+      subtitle_path=srt_dest,
+    )
+
+    # print(f"Generated captioned video stored at: {video_output}")
 
   # Return the transcript right away
   return transcript_with_translations

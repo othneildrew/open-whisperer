@@ -85,8 +85,7 @@ app.include_router(languages.router)
 
 # Serve the static folder with all the files
 storage_path = get_storage_path()
-static_dir = get_storage_path() / "media"
-static_dir.mkdir(parents=True, exist_ok=True)
+storage_path.mkdir(parents=True, exist_ok=True)
 app.mount("/media", StaticFiles(directory=get_storage_path()), name="media")
 
 @app.get("/", operation_id="sayHello")
