@@ -36,15 +36,6 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
-    updateTranscript: build.mutation<
-      UpdateTranscriptApiResponse,
-      UpdateTranscriptApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/transcripts/${queryArg}`,
-        method: "PATCH",
-      }),
-    }),
     applySubtitles: build.mutation<
       ApplySubtitlesApiResponse,
       ApplySubtitlesApiArg
@@ -95,9 +86,6 @@ export type GenerateTranscriptApiArg = {
   fromLang?: string;
   toLang?: string;
 };
-export type UpdateTranscriptApiResponse =
-  /** status 200 Successful Response */ any;
-export type UpdateTranscriptApiArg = string;
 export type ApplySubtitlesApiResponse =
   /** status 200 Successful Response */ any;
 export type ApplySubtitlesApiArg = {
@@ -138,7 +126,6 @@ export const {
   useUploadFileMutation,
   useGetTranscriptQuery,
   useGenerateTranscriptMutation,
-  useUpdateTranscriptMutation,
   useApplySubtitlesMutation,
   useListTranscriptSupportedLanguagesQuery,
   useListTranslateSupportedLanguagesQuery,

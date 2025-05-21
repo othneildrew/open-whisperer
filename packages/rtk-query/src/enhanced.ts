@@ -1,5 +1,9 @@
 import { api as rawApi } from "./generated/openWhispererApi";
 
+export interface UploadFileApiArg {
+  file: File;
+}
+
 const enhancedOpenWhispererApi = rawApi.enhanceEndpoints({
   addTagTypes: ["Session", "Transcript", "Language"],
   endpoints: {
@@ -25,6 +29,15 @@ const enhancedOpenWhispererApi = rawApi.enhanceEndpoints({
       providesTags: ["Language"],
     },
     uploadFile: {
+      query: (queryArg: UploadFileApiArg) => {
+        const formData = new FormData();
+        formData.append('file', queryArg.file)
+        return {
+          url: '/uploads',
+          method: "POST",
+          body: formData,
+        }
+      },
       invalidatesTags: ["Session"],
     },
     applySubtitles: {
