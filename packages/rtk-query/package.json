@@ -2,7 +2,12 @@
   "name": "@open-whisperer/rtk-query",
   "version": "0.0.1",
   "private": true,
-  "main": "dist/openWhispererApi.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  },
   "scripts": {
     "codegen": "npx @rtk-query/codegen-openapi ./openapi-config.ts"
   },

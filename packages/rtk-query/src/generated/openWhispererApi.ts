@@ -1,4 +1,4 @@
-import { baseSplitApi as api } from "../src/baseSplitApi";
+import { baseSplitApi as api } from "../baseSplitApi";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     listSessions: build.query<ListSessionsApiResponse, ListSessionsApiArg>({
@@ -23,9 +23,9 @@ const injectedRtkApi = api.injectEndpoints({
     getTranscript: build.query<GetTranscriptApiResponse, GetTranscriptApiArg>({
       query: (queryArg) => ({ url: `/transcripts/${queryArg}` }),
     }),
-    transcribeFile: build.mutation<
-      TranscribeFileApiResponse,
-      TranscribeFileApiArg
+    generateTranscript: build.mutation<
+      GenerateTranscriptApiResponse,
+      GenerateTranscriptApiArg
     >({
       query: (queryArg) => ({
         url: `/transcripts/${queryArg.sessionId}`,
@@ -33,6 +33,27 @@ const injectedRtkApi = api.injectEndpoints({
         params: {
           from_lang: queryArg.fromLang,
           to_lang: queryArg.toLang,
+        },
+      }),
+    }),
+    updateTranscript: build.mutation<
+      UpdateTranscriptApiResponse,
+      UpdateTranscriptApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/transcripts/${queryArg}`,
+        method: "PATCH",
+      }),
+    }),
+    applySubtitles: build.mutation<
+      ApplySubtitlesApiResponse,
+      ApplySubtitlesApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/transcripts/${queryArg.sessionId}/apply`,
+        method: "POST",
+        params: {
+          lang: queryArg.lang,
         },
       }),
     }),
@@ -67,12 +88,21 @@ export type UploadFileApiArg = BodyUploadFile;
 export type GetTranscriptApiResponse =
   /** status 200 Successful Response */ any;
 export type GetTranscriptApiArg = string;
-export type TranscribeFileApiResponse =
+export type GenerateTranscriptApiResponse =
   /** status 200 Successful Response */ any;
-export type TranscribeFileApiArg = {
+export type GenerateTranscriptApiArg = {
   sessionId: string;
   fromLang?: string;
   toLang?: string;
+};
+export type UpdateTranscriptApiResponse =
+  /** status 200 Successful Response */ any;
+export type UpdateTranscriptApiArg = string;
+export type ApplySubtitlesApiResponse =
+  /** status 200 Successful Response */ any;
+export type ApplySubtitlesApiArg = {
+  sessionId: string;
+  lang?: string;
 };
 export type ListTranscriptSupportedLanguagesApiResponse =
   /** status 200 Successful Response */ LanguageResponse;
@@ -107,7 +137,9 @@ export const {
   useDeleteSessionMutation,
   useUploadFileMutation,
   useGetTranscriptQuery,
-  useTranscribeFileMutation,
+  useGenerateTranscriptMutation,
+  useUpdateTranscriptMutation,
+  useApplySubtitlesMutation,
   useListTranscriptSupportedLanguagesQuery,
   useListTranslateSupportedLanguagesQuery,
   useSayHelloQuery,

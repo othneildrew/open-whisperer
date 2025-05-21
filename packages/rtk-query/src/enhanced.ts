@@ -1,4 +1,4 @@
-import { openWhispererApi as api } from '../dist/openWhispererApi';
+import { openWhispererApi as api } from './generated/openWhispererApi';
 
 export const enhancedOpenWhispererApi = api.enhanceEndpoints({
   addTagTypes: ['Session', 'Transcript', 'Language'],
@@ -15,7 +15,7 @@ export const enhancedOpenWhispererApi = api.enhanceEndpoints({
     getTranscript: {
       providesTags: ['Transcript'],
     },
-    transcribeFile: {
+    generateTranscript: {
       invalidatesTags: ['Transcript', 'Session'],
     },
     listTranscriptSupportedLanguages: {

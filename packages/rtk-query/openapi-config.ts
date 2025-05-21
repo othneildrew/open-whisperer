@@ -6,7 +6,7 @@ const config: ConfigFile = {
   schemaFile,
   apiFile: './src/baseSplitApi.ts',
   apiImport: 'baseSplitApi',
-  outputFile: './dist/openWhispererApi.ts',
+  outputFile: './src/generated/openWhispererApi.ts',
   exportName: 'openWhispererApi',
   hooks: true,
   flattenArg: true,
