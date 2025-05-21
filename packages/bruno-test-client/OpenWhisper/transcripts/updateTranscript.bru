@@ -1,15 +1,15 @@
 meta {
-  name: transcribeFile
+  name: updateTranscript
   type: http
-  seq: 2
+  seq: 3
 }
 
-post {
+patch {
   url: {{API_SERVER}}/transcripts/:session_id
   body: none
   auth: inherit
 }
 
 params:path {
-  session_id: fbe6041a4a28479dad50f5529083cbf6
+  session_id: 
 }

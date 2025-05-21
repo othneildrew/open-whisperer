@@ -1,0 +1,19 @@
+meta {
+  name: applySubtitles
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{API_SERVER}}/transcripts/:session_id/apply?lang=en
+  body: none
+  auth: inherit
+}
+
+params:query {
+  lang: en
+}
+
+params:path {
+  session_id: 3beb6a7d72dc4318abf08e23e2056abc
+}

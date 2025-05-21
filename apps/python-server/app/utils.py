@@ -46,7 +46,7 @@ def get_client_ip():
 def raise_not_found_exception(resource: str):
   raise HTTPException(
     status_code=HTTP_404_NOT_FOUND,
-    detail=f"${resource} not found"
+    detail=f"{resource} not found"
   )
 
 def get_project_root_path():

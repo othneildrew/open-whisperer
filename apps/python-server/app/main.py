@@ -44,9 +44,9 @@ app = FastAPI(
 
 # Apply middleware
 # Check host header sent in http request
-# app.add_middleware(
-#   TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS
-# )
+app.add_middleware(
+  TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS
+)
 
 app.add_middleware(
   CORSMiddleware,
@@ -57,15 +57,15 @@ app.add_middleware(
 )
 
 # Actually restrict apis outside of localhost (yes, don't try to use my shit, host it yourself!)
-# @app.middleware("http")
-# async def restrict_to_localhost(request: Request, call_next):
-#   client_host = request.client.host
-#   if client_host not in ALLOWED_HOSTS:
-#     return JSONResponse(
-#       status_code=403,
-#       content={"detail": "Access forbidden: only localhost is allowed"}
-#     )
-#   return await call_next(request)
+@app.middleware("http")
+async def restrict_to_localhost(request: Request, call_next):
+  client_host = request.client.host
+  if client_host not in ALLOWED_HOSTS:
+    return JSONResponse(
+      status_code=403,
+      content={"detail": "Access forbidden: only localhost is allowed"}
+    )
+  return await call_next(request)
 
 # Exception handler
 @app.exception_handler(Exception)

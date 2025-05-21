@@ -30,8 +30,8 @@ async def get_transcript_file(session_id: str):
   return await session_json_load(session_id, transcript_file)
 
 
-@router.post("/{session_id}", operation_id="transcribeFile")
-async def transcribe_file(
+@router.post("/{session_id}", operation_id="generateTranscript")
+async def generate_transcript_file(
     session_id: str,
     from_lang: str = Query(default=None),
     to_lang: str = Query(default=None),
@@ -130,3 +130,43 @@ async def transcribe_file(
 
   # Return the transcript right away
   return transcript_with_translations
+
+@router.patch("/{session_id}", operation_id="updateTranscript")
+async def update_transcript_file():
+  # TODO: fill in update transcript file stub
+  return ""
+
+@router.post("/{session_id}/apply", operation_id="applySubtitles")
+async def apply_transcript_subtitles_to_video(
+    session_id: str,
+    lang: str = Query(default=None),
+):
+  session = get_session_if_exists(session_id)
+  session_dir = get_session_storage_dir(session_id)
+  srt_path = session_dir / f"{lang}.srt"
+
+  if not session:
+    raise_not_found_exception("Session")
+  elif not srt_path.exists():
+    raise_not_found_exception(f"{lang}.srt")
+
+  input_file = session_dir / session.input
+  output_file = session_dir / "output.mp4"
+  srt_file = session_dir / f"{lang}.srt"
+
+  try:
+    await add_subtitle_to_video(
+      input_path=input_file,
+      output_path=output_file,
+      subtitle_path=srt_file,
+    )
+  except (OSError, IOError) as exc:
+    print(f"Failed to add {lang}.srt subtitles to video stream")
+    raise
+
+  # TODO: fill in apply transcript subtitles to video stub
+  return {
+    "session_id": session_id,
+    "lang": lang,
+    "output": "output.mp4"
+  }
