@@ -7,7 +7,7 @@ const config: ConfigFile = {
   apiFile: './src/baseSplitApi.ts',
   apiImport: 'baseSplitApi',
   outputFile: './src/generated/openWhispererApi.ts',
-  exportName: 'openWhispererApi',
+  exportName: 'api',
   hooks: true,
   flattenArg: true,
 }

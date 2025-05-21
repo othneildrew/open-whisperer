@@ -1,14 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { openWhispererApi } from "@open-whisperer/rtk-query";
+import { api } from "@open-whisperer/rtk-query";
 import { useDispatch, useSelector, useStore } from 'react-redux';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      [openWhispererApi.reducerPath]: openWhispererApi.reducer,
+      [api.reducerPath]: api.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(openWhispererApi.middleware),
+      getDefaultMiddleware().concat(api.middleware),
   })
 }
 

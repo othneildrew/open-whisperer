@@ -75,7 +75,7 @@ const injectedRtkApi = api.injectEndpoints({
   }),
   overrideExisting: false,
 });
-export { injectedRtkApi as openWhispererApi };
+export { injectedRtkApi as api };
 export type ListSessionsApiResponse = /** status 200 Successful Response */ any;
 export type ListSessionsApiArg = void;
 export type GetSessionApiResponse = /** status 200 Successful Response */ any;
