@@ -20,7 +20,7 @@ export const AppBar = () => {
 
   return (
     <nav
-      className={`fixed top-0 z-20 w-full flex justify-between items-center px-4 h-[56px] backdrop-blur-md bg-background/18 border-1 border-b-neutral-800`}
+      className={`fixed top-0 z-20 w-full flex justify-between items-center px-4 h-[56px] backdrop-blur-md bg-background/18 border-1 border-b-neutral-900`}
     >
       <Image
         priority

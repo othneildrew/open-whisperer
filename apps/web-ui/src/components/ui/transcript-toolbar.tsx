@@ -23,7 +23,7 @@ export const TranscriptToolbar = ({
   isTranscribing,
   handleTranscribe,
 }: TranscriptToolbarProps) => (
-  <div className="px-4 flex gap-5 justify-between items-center h-[48px] border-b-1 border-b-neutral-800">
+  <div className="px-4 flex gap-5 justify-between items-center h-[48px]">
     <div className="flex gap-2 items-center">
       Translate:
       <SupportedLanguageDropdown

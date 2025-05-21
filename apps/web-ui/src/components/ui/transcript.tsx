@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useGetTranscriptQuery } from "@open-whisperer/rtk-query";
 import { Textarea } from "@/components/shad-ui/textarea";
 import { ArrowRight } from "lucide-react";
@@ -40,12 +40,8 @@ export const Transcript = ({ transcribing }: TranscriptProps) => {
     [events.length, isLoading, isSuccess],
   );
 
-  useEffect(() => {
-    console.log("TRANSCRIPT FROM TRANSCRIPT FILE:::", transcript);
-  }, [transcript]);
-
   return (
-    <div className="flex-1 bg-muted/30">
+    <div className="flex-1">
       {hasTranscript ? (
         <>
           {events.map(({ start, end, number, text, translated_text }) => (
@@ -54,7 +50,8 @@ export const Transcript = ({ transcribing }: TranscriptProps) => {
               className="px-4 pb-4 pt-2 border-b-1 border-neutral-900"
             >
               <p className="pb-2">
-                <strong className="dark:text-white/90">{number}</strong> {secondsToSrtTimestamp(start, end)}
+                <strong className="dark:text-white/90">{number}</strong>{" "}
+                {secondsToSrtTimestamp(start, end)}
               </p>
               <div
                 key={number}
@@ -81,13 +78,14 @@ export const Transcript = ({ transcribing }: TranscriptProps) => {
         <TranscriptSkeleton />
       ) : (
         <div className="flex flex-col p-4 gap-2">
-          <p className="">
-            No transcript has been generated. Choose a target language and click
-            "Generate Transcript" above.
+          <p>
+            No transcript has been generated.
+            <br /> Choose a target language and click "Generate Transcript"
+            above.
           </p>
           <small>
-            Recommended: set source to "Auto Detect" unless you get inaccurate
-            results
+            <strong>Recommended</strong>: set source to "Auto Detect" unless you
+            get inaccurate results
           </small>
         </div>
       )}

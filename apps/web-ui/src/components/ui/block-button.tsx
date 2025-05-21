@@ -1,28 +1,54 @@
-import { ArrowRight } from "lucide-react";
+import clsx from "clsx";
+import { ArrowRight, ArrowUp } from "lucide-react";
 import { ThreeDots } from "react-loader-spinner";
+
+type BlockButtonState = "update" | "apply";
 
 export interface BlockButtonProps {
   onClick?: () => void;
   isLoading?: boolean;
+  state?: BlockButtonState;
+  disabled?: boolean;
 }
 
-export const BlockButton = ({ onClick, isLoading }: BlockButtonProps) => {
+export const BlockButton = ({
+  state = "apply",
+  onClick,
+  isLoading,
+  disabled,
+}: BlockButtonProps) => {
+  const btnTextMap: Record<BlockButtonState, string> = {
+    update: "Update Transcript",
+    apply: "Apply Subtitles to Video",
+  };
+
   return (
     <button
-      className="disabled:cursor-not-allowed transition-colors relative flex justify-center items-center h-[48px] bg-primary cursor-pointer hover:bg-primary/90 disabled:bg-primary/90"
+      className={clsx(
+        "disabled:cursor-not-allowed transition-colors relative flex justify-center items-center h-[48px] cursor-pointer ",
+        {
+          "bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/90":
+            !disabled,
+          "bg-secondary text-secondary-foreground/78": disabled,
+        },
+      )}
       onClick={onClick}
-      disabled={isLoading}
+      disabled={disabled || isLoading}
     >
       {isLoading ? (
         <ThreeDots color="#ffffff" height={16} />
       ) : (
         <>
-          {" "}
-          <p className="text-primary-foreground font-semibold">
-            Apply Subtitles to Video
-          </p>
-          <div className="absolute right-2 text-primary-foreground">
-            <ArrowRight size={24} />
+          <div className="absolute left-2">
+            {state === "update" && <ArrowUp size={24} />}
+          </div>
+          <p className="font-semibold">{btnTextMap[state]}</p>
+          <div className="absolute right-2">
+            {state === "update" ? (
+              <ArrowUp size={24} />
+            ) : (
+              <ArrowRight size={24} />
+            )}
           </div>
         </>
       )}
