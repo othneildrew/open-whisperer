@@ -8,14 +8,22 @@ class Translator:
     self.source_lang = source_lang
     self.target_lang = target_lang
 
+    # TODO: only download new packages if the version is different from installed version
     argostranslate.package.update_package_index()
     available_packages = argostranslate.package.get_available_packages()
+
     package_to_install = next(
       filter(
         lambda x: x.from_code == self.source_lang and x.to_code == self.target_lang, available_packages
-      )
+      ),
+      None
     )
-    argostranslate.package.install_from_path(package_to_install.download())
+
+    if package_to_install:
+      argostranslate.package.install_from_path(package_to_install.download())
+
+    # Load previously installed packages
+    argostranslate.translate.load_installed_languages()
 
 
   async def __flatten_json_text_content(self):
