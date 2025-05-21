@@ -4,74 +4,87 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/shad-ui/dropdown-menu";
-import { Language } from "@open-whisperer/rtk-query";
-import { Button } from "@/components/shad-ui/button";
-import { ChevronDown } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+} from '@/components/shad-ui/dropdown-menu';
+import { Language } from '@open-whisperer/rtk-query';
+import { Button } from '@/components/shad-ui/button';
+import { ChevronDown } from 'lucide-react';
+import { useCallback, useMemo } from 'react';
 
-type SupportedLanguageCode = Language["code"];
+export type SupportedLanguageCode = Language['code'];
 
 export interface SupportedLanguageDropdownProps {
   languages: Language[];
   helperText: string;
-  defaultSelected?: SupportedLanguageCode;
-  onChange?: (language: Language) => void;
+  onChange: (language: SupportedLanguageCode) => void;
+  value: SupportedLanguageCode | undefined;
   isLoading?: boolean;
+  omittedLanguages?: SupportedLanguageCode[];
+  allowAutoDetectOption?: boolean;
 }
+
+export const AUTO_LANGUAGE_SELECTION = {
+  code: 'auto-detected',
+  name: '(Auto Detect)',
+};
 
 export const SupportedLanguageDropdown = ({
   languages,
   helperText,
   onChange,
-  defaultSelected,
   isLoading,
+  value,
+  allowAutoDetectOption = false,
+  omittedLanguages = [],
 }: SupportedLanguageDropdownProps) => {
-  const languagesWithAuto = useMemo(() => {
-    return [{ code: "auto-detected", name: "(Auto Detect)" }, ...languages];
-  }, [languages]);
+  const languagesWithAuto = useMemo(
+    () => [
+      ...(allowAutoDetectOption ? [AUTO_LANGUAGE_SELECTION] : []),
+      ...languages,
+    ],
+    [allowAutoDetectOption, languages]
+  );
+
+  const filteredLanguages = useMemo(
+    () => languagesWithAuto.filter((l) => !omittedLanguages.includes(l.code)),
+    [languagesWithAuto, omittedLanguages]
+  );
 
   const getLangOrUndefined = useCallback(
-    (value: SupportedLanguageCode) =>
+    (value?: SupportedLanguageCode) =>
       languagesWithAuto.find((o) => o.code === value),
-    [languagesWithAuto],
+    [languagesWithAuto]
   );
 
-  const [selected, setSelected] = useState<Language>(
-    () => languagesWithAuto[0],
-  );
-
-  const handleChange = (value: SupportedLanguageCode) => {
+  const selected = useMemo(() => {
     const obj = getLangOrUndefined(value);
-    if (obj) setSelected(obj);
-  };
+    return obj || { code: 'none', name: 'None' };
+  }, [getLangOrUndefined, value]);
 
-  useEffect(() => {
-    onChange?.(selected);
-  }, [onChange, selected]);
-
-  useEffect(() => {
-    if (defaultSelected) {
-      const obj = getLangOrUndefined(defaultSelected);
-      if (obj) setSelected(obj);
-    }
-  }, [defaultSelected, getLangOrUndefined]);
+  const handleChange = useCallback(
+    (value: SupportedLanguageCode) => {
+      onChange?.(value);
+    },
+    [onChange]
+  );
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" disabled={isLoading}>
           <small className="text-muted-foreground">{helperText}:</small>
-          {selected.name}
+          {selected?.name}
           <ChevronDown size={16} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         <DropdownMenuRadioGroup
-          value={selected.code}
+          value={selected?.code}
           onValueChange={handleChange}
         >
-          {languagesWithAuto.map(({ code, name }) => (
+          <DropdownMenuRadioItem value="none" disabled>
+            None
+          </DropdownMenuRadioItem>
+          {filteredLanguages.map(({ code, name }) => (
             <DropdownMenuRadioItem key={code} value={code}>
               {name}
             </DropdownMenuRadioItem>

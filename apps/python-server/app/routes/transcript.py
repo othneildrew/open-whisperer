@@ -113,26 +113,11 @@ async def generate_transcript_file(
 
   print(srt_content)
 
-  # Output a new video with the translated subtitles
-  video_input = session_dir / session.input
-  video_output = session_dir / "output.mp4"
-
-  print(f"Generating captioned video for {target_lang}")
-
-  if srt_dest.exists():
-    await add_subtitle_to_video(
-      input_path=video_input,
-      output_path=video_output,
-      subtitle_path=srt_dest,
-    )
-
-    # print(f"Generated captioned video stored at: {video_output}")
-
-  # Return the transcript right away
+  # Return the new transcript
   return transcript_with_translations
 
 @router.patch("/{session_id}", operation_id="updateTranscript")
-async def update_transcript_file():
+async def update_transcript_file(session_id: str):
   # TODO: fill in update transcript file stub
   return ""
 
@@ -162,6 +147,7 @@ async def apply_transcript_subtitles_to_video(
     )
   except (OSError, IOError) as exc:
     print(f"Failed to add {lang}.srt subtitles to video stream")
+    print(exc)
     raise
 
   # TODO: fill in apply transcript subtitles to video stub

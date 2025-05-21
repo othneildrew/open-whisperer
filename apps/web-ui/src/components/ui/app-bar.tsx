@@ -1,8 +1,8 @@
 "use client";
 
+import logo from "../../../public/logo.png";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import logo from "../../../public/logo.png";
 import { Button } from "@/components/shad-ui/button";
 import { ImageUp } from "lucide-react";
 import { BiLogoGithub } from "react-icons/bi";
@@ -29,7 +29,11 @@ export const AppBar = () => {
         className="h-[28px] w-auto"
         draggable={false}
         unselectable="on"
-        onClick={() => router.push("/")}
+        onClick={() => {
+          if (pathname !== "/") {
+            router.push("/");
+          }
+        }}
       />
 
       <div className="flex gap-2 items-center">

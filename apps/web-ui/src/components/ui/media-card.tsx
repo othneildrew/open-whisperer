@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import Image from "next/image";
 import { AspectRatio } from "@/components/shad-ui/aspect-ratio";
+import { BACKEND_SERVER_MEDIA_URL } from "@/lib/constants";
 
 export interface SimpleCardProps {
   id: string;
@@ -18,11 +19,10 @@ export const MediaCard = ({
   const src = useMemo(
     () =>
       thumbnail
-        ? `http://localhost:8000/media/${id}/${thumbnail}`
+        ? `${BACKEND_SERVER_MEDIA_URL}/${id}/${thumbnail}`
         : "/placeholder.jpg",
     [id, thumbnail],
   );
-
 
   return (
     <div
@@ -36,7 +36,7 @@ export const MediaCard = ({
           alt="thumbnail"
           className="rounded-lg object-cover"
           unselectable="on"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 10vw"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 28vw"
           draggable={false}
         />
       </AspectRatio>

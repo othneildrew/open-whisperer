@@ -11,9 +11,10 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.config({
-    extends: ["next/core-web-vitals", "next/typescript"],
+    extends: ["next/core-web-vitals", "next/typescript", "prettier"],
     rules: {
       "react/no-unescaped-entities": "off",
+      // warn instead of error, tree shaking enabled on builds so helpful to keep around for better devx
       "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
     },

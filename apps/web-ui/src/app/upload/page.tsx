@@ -5,6 +5,7 @@ import { useUploadFileMutation } from "@open-whisperer/rtk-query";
 import { WaveLoaderSkeleton } from "@/components/skeletons/wave-loader-skeleton";
 import { UploadCard } from "@/components/skeletons/upload-card";
 import { useCallback, useEffect, useState } from "react";
+import { BACKEND_SERVER_URL } from "@/lib/constants";
 
 export default function Upload() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function Upload() {
       formData.append("file", file);
 
       try {
-        const result = await fetch("http://localhost:8000/uploads", {
+        const result = await fetch(`${BACKEND_SERVER_URL}/uploads`, {
           method: "POST",
           body: formData,
         });

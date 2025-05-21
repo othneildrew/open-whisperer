@@ -54,7 +54,7 @@ env/bin/activate
 <br />
 <div align="center">
   <a href="https://github.com/othneildrew/open-whisperer">
-    <img src="./apps/web-ui/public/icon_w_bg.png" alt="Logo" width="80" height="80">
+    <img src="./apps/web-ui/public/icon_color.png" alt="Logo" width="80" height="57.25">
   </a>
 
 <h3 align="center">Open Whisperer</h3>

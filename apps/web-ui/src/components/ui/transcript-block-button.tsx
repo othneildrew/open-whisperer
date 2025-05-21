@@ -2,22 +2,22 @@ import clsx from "clsx";
 import { ArrowRight, ArrowUp } from "lucide-react";
 import { ThreeDots } from "react-loader-spinner";
 
-type BlockButtonState = "update" | "apply";
+export type BlockButtonMode = "update" | "apply";
 
 export interface BlockButtonProps {
   onClick?: () => void;
   isLoading?: boolean;
-  state?: BlockButtonState;
+  mode?: BlockButtonMode;
   disabled?: boolean;
 }
 
-export const BlockButton = ({
-  state = "apply",
+export const TranscriptBlockButton = ({
+  mode = "apply",
   onClick,
   isLoading,
   disabled,
 }: BlockButtonProps) => {
-  const btnTextMap: Record<BlockButtonState, string> = {
+  const btnTextMap: Record<BlockButtonMode, string> = {
     update: "Update Transcript",
     apply: "Apply Subtitles to Video",
   };
@@ -27,7 +27,7 @@ export const BlockButton = ({
       className={clsx(
         "disabled:cursor-not-allowed transition-colors relative flex justify-center items-center h-[48px] cursor-pointer ",
         {
-          "bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/90":
+          "bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/50":
             !disabled,
           "bg-secondary text-secondary-foreground/78": disabled,
         },
@@ -40,11 +40,11 @@ export const BlockButton = ({
       ) : (
         <>
           <div className="absolute left-2">
-            {state === "update" && <ArrowUp size={24} />}
+            {mode === "update" && <ArrowUp size={24} />}
           </div>
-          <p className="font-semibold">{btnTextMap[state]}</p>
+          <p className="font-semibold">{btnTextMap[mode]}</p>
           <div className="absolute right-2">
-            {state === "update" ? (
+            {mode === "update" ? (
               <ArrowUp size={24} />
             ) : (
               <ArrowRight size={24} />

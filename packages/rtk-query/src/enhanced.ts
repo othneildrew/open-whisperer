@@ -1,33 +1,33 @@
-import { api as rawApi } from './generated/openWhispererApi';
+import { api as rawApi } from "./generated/openWhispererApi";
 
 const enhancedOpenWhispererApi = rawApi.enhanceEndpoints({
-  addTagTypes: ['Session', 'Transcript', 'Language'],
+  addTagTypes: ["Session", "Transcript", "Language"],
   endpoints: {
     listSessions: {
-      providesTags: ['Session'],
+      providesTags: ["Session"],
     },
     getSession: {
-      providesTags: ['Session'],
+      providesTags: ["Session"],
     },
     deleteSession: {
-      invalidatesTags: ['Session'],
+      invalidatesTags: ["Session"],
     },
     getTranscript: {
-      providesTags: ['Transcript'],
+      providesTags: ["Transcript"],
     },
     generateTranscript: {
-      invalidatesTags: ['Transcript', 'Session'],
+      invalidatesTags: ["Transcript", "Session"],
     },
     listTranscriptSupportedLanguages: {
-      providesTags: ['Language'],
+      providesTags: ["Language"],
     },
     listTranslateSupportedLanguages: {
-      providesTags: ['Language'],
+      providesTags: ["Language"],
     },
     uploadFile: {
-      invalidatesTags: ['Session'],
-    }
-  }
+      invalidatesTags: ["Session"],
+    },
+  },
 });
 
 // Debug flag to ensure correct api being exported
@@ -43,4 +43,4 @@ export const api = enhancedOpenWhispererApi;
  * without explicitly having to call "api.useHook," "useHook" should work
  * fine with proper cache invalidation.
  */
-export * from './generated/openWhispererApi';
+export * from "./generated/openWhispererApi";
