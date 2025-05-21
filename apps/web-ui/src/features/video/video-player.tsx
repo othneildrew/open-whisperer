@@ -11,6 +11,7 @@ export const VideoPlayer = () => {
   const {
     data: session,
     isLoading,
+    isFetching,
     isSuccess,
   } = useGetSessionQuery(sessionId!, { skip: !sessionId });
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -21,12 +22,25 @@ export const VideoPlayer = () => {
   }, [session?.input]);
 
   useEffect(() => {
-    if (!isLoading && isSuccess && session?.id && session?.input) {
+    if (
+      !isLoading &&
+      !isFetching &&
+      isSuccess &&
+      session?.id &&
+      session?.input
+    ) {
       setVideoUrl(
         `${BACKEND_SERVER_MEDIA_URL}/${session.id}/${session.output || session.input}`
       );
+
+      // Trigger a reload of the video source
+      videoRef?.current?.load();
     }
-  }, [isLoading, isSuccess, session]);
+  }, [isFetching, isLoading, isSuccess, session, videoRef]);
+
+  useEffect(() => {
+    console.log('session [video-player.tsx]:::', session);
+  }, [session]);
 
   useEffect(() => {
     if (videoUrl) {

@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.db import Base, engine
 from app.utils import ALLOWED_HOSTS, get_storage_path
-from .routes import sessions, uploads, transcript, languages
+from .routes import sessions, uploads, transcripts, languages
 
 development: bool = os.getenv("ENV") == 'development'
 
@@ -80,7 +80,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 # Register api routes
 app.include_router(sessions.router)
 app.include_router(uploads.router)
-app.include_router(transcript.router)
+app.include_router(transcripts.router)
 app.include_router(languages.router)
 
 # Serve the static folder with all the files

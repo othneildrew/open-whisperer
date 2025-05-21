@@ -1,11 +1,11 @@
 import shutil
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from fastapi.params import Depends
-from starlette.status import HTTP_404_NOT_FOUND
+from typing import Optional
 
 from app.db import get_db
 from app.models.session import Session
-from app.utils import get_storage_path
+from app.utils import get_storage_path, raise_not_found_exception
 
 router = APIRouter(
   prefix="/sessions",
@@ -14,12 +14,10 @@ router = APIRouter(
   responses={404: {"description": "Not found"}}
 )
 
-def get_session_if_exists(session_id: str):
-  db = next(get_db())
-  session = db.query(Session).filter(Session.id == session_id).first()
-  return session if session else False
+def get_session_if_exists(session_id: str, db: Session) -> Optional[Session]:
+  return db.query(Session).filter(Session.id == session_id).first()
 
-# No create session, can only be created by uploading a file
+# No create session, sessions can only be created by uploading a file
 # Also, no updating, can only be updated by uploading new file
 
 @router.get("", operation_id="listSessions")
@@ -28,13 +26,10 @@ async def list_sessions(db: Session = Depends(get_db)):
 
 @router.get("/{session_id}", operation_id="getSession")
 async def get_session(session_id: str, db: Session = Depends(get_db)):
-  session = db.query(Session).filter(Session.id == session_id).first()
+  session = get_session_if_exists(session_id, db)
 
   if not session:
-    raise HTTPException(
-      status_code=HTTP_404_NOT_FOUND,
-      detail="Session not found"
-    )
+    raise_not_found_exception("Session")
 
   return {
     "id": session.id,
@@ -47,14 +42,13 @@ async def get_session(session_id: str, db: Session = Depends(get_db)):
     "input_file_name": session.input_file_name,
     "input_file_size": session.input_file_size,
     "thumbnail": session.thumbnail,
-    # "status": "<TODO>",
     "created_at": session.created_at,
     "expires_at": session.updated_at,
   }
 
 @router.delete("/{session_id}", operation_id="deleteSession")
 async def delete_session(session_id: str, db: Session = Depends(get_db)):
-  session = db.query(Session).filter(Session.id == session_id).first()
+  session = get_session_if_exists(session_id, db)
 
   # Allow to silently fail if no session, better for UI error handling I think
   if not session:

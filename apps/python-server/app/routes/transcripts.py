@@ -1,6 +1,9 @@
 import srt
 from fastapi import APIRouter, Query
+from fastapi.params import Depends
 
+from app.db import get_db
+from app.models.session import Session
 from app.routes.sessions import get_session_if_exists
 from app.services.transcriber import WhisperRunner, persist_transcript
 from app.services.translator import Translator
@@ -15,8 +18,8 @@ router = APIRouter(
 )
 
 @router.get("/{session_id}", operation_id="getTranscript")
-async def get_transcript_file(session_id: str):
-  session = get_session_if_exists(session_id)
+async def get_transcript_file(session_id: str, db: Session = Depends(get_db)):
+  session = get_session_if_exists(session_id, db)
 
   if not session:
     raise_not_found_exception("Session")
@@ -35,12 +38,13 @@ async def generate_transcript_file(
     session_id: str,
     from_lang: str = Query(default=None),
     to_lang: str = Query(default=None),
+    db: Session = Depends(get_db)
 ):
   # Normalize the variables if none set
   from_lang = (from_lang or "").strip()
   to_lang = (to_lang or "en").strip()
 
-  session = get_session_if_exists(session_id)
+  session = get_session_if_exists(session_id, db)
   session_dir = get_session_storage_dir(session_id)
 
   if not session:
@@ -116,17 +120,18 @@ async def generate_transcript_file(
   # Return the new transcript
   return transcript_with_translations
 
-@router.patch("/{session_id}", operation_id="updateTranscript")
-async def update_transcript_file(session_id: str):
-  # TODO: fill in update transcript file stub
-  return ""
+# @router.patch("/{session_id}", operation_id="updateTranscript")
+# async def update_transcript_file(session_id: str):
+#   # TODO: fill in update transcript file stub
+#   return ""
 
 @router.post("/{session_id}/apply", operation_id="applySubtitles")
 async def apply_transcript_subtitles_to_video(
     session_id: str,
     lang: str = Query(default=None),
+    db: Session = Depends(get_db)
 ):
-  session = get_session_if_exists(session_id)
+  session = get_session_if_exists(session_id, db)
   session_dir = get_session_storage_dir(session_id)
   srt_path = session_dir / f"{lang}.srt"
 
@@ -135,8 +140,9 @@ async def apply_transcript_subtitles_to_video(
   elif not srt_path.exists():
     raise_not_found_exception(f"{lang}.srt")
 
+  output_file_name = "output.mp4"
   input_file = session_dir / session.input
-  output_file = session_dir / "output.mp4"
+  output_file = session_dir / output_file_name
   srt_file = session_dir / f"{lang}.srt"
 
   try:
@@ -145,6 +151,12 @@ async def apply_transcript_subtitles_to_video(
       output_path=output_file,
       subtitle_path=srt_file,
     )
+
+    # Update the session to show the output file
+    session.output = output_file_name
+    db.commit()
+    db.refresh(session)
+
   except (OSError, IOError) as exc:
     print(f"Failed to add {lang}.srt subtitles to video stream")
     print(exc)

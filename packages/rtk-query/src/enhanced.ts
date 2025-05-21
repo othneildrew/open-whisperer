@@ -27,6 +27,9 @@ const enhancedOpenWhispererApi = rawApi.enhanceEndpoints({
     uploadFile: {
       invalidatesTags: ["Session"],
     },
+    applySubtitles: {
+      invalidatesTags: ["Session"],
+    }
   },
 });
 
