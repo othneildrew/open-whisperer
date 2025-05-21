@@ -1,8 +1,8 @@
-import clsx from "clsx";
-import { ArrowRight, ArrowUp } from "lucide-react";
-import { ThreeDots } from "react-loader-spinner";
+import clsx from 'clsx';
+import { ArrowRight, ArrowUp } from 'lucide-react';
+import { ThreeDots } from 'react-loader-spinner';
 
-export type BlockButtonMode = "update" | "apply";
+export type BlockButtonMode = 'update' | 'apply';
 
 export interface BlockButtonProps {
   onClick?: () => void;
@@ -12,25 +12,25 @@ export interface BlockButtonProps {
 }
 
 export const TranscriptBlockButton = ({
-  mode = "apply",
+  mode = 'apply',
   onClick,
   isLoading,
   disabled,
 }: BlockButtonProps) => {
   const btnTextMap: Record<BlockButtonMode, string> = {
-    update: "Update Transcript",
-    apply: "Apply Subtitles to Video",
+    update: 'Update Transcript',
+    apply: 'Apply Subtitles to Video',
   };
 
   return (
     <button
       className={clsx(
-        "disabled:cursor-not-allowed transition-colors relative flex justify-center items-center h-[48px] cursor-pointer ",
+        'disabled:cursor-not-allowed transition-colors relative flex justify-center items-center h-[48px] cursor-pointer ',
         {
-          "bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/50":
+          'bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/50':
             !disabled,
-          "bg-secondary text-secondary-foreground/78": disabled,
-        },
+          'bg-secondary text-secondary-foreground/78': disabled,
+        }
       )}
       onClick={onClick}
       disabled={disabled || isLoading}
@@ -40,11 +40,11 @@ export const TranscriptBlockButton = ({
       ) : (
         <>
           <div className="absolute left-2">
-            {mode === "update" && <ArrowUp size={24} />}
+            {mode === 'update' && <ArrowUp size={24} />}
           </div>
           <p className="font-semibold">{btnTextMap[mode]}</p>
           <div className="absolute right-2">
-            {mode === "update" ? (
+            {mode === 'update' ? (
               <ArrowUp size={24} />
             ) : (
               <ArrowRight size={24} />

@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import { CloudUpload } from "lucide-react";
-import { Separator } from "@/components/shad-ui/separator";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "@/components/shad-ui/button";
-import { ThreeDots } from "react-loader-spinner";
+import { CloudUpload } from 'lucide-react';
+import { Separator } from '@/components/shad-ui/separator';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/shad-ui/button';
+import { ThreeDots } from 'react-loader-spinner';
 
 export interface UploadCardProps {
   handleFileUpload: (file: File) => Promise<void>;
+  isLoading?: boolean;
 }
 
 const isFileUnder2GB = (size: number) => {
@@ -15,11 +16,13 @@ const isFileUnder2GB = (size: number) => {
   return size <= maxSizeInBytes;
 };
 
-export const UploadCard = ({ handleFileUpload }: UploadCardProps) => {
+export const UploadCard = ({
+  handleFileUpload,
+  isLoading,
+}: UploadCardProps) => {
   // const handleFileDrop = () => {};
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleFileAttached = useCallback((e: Event) => {
     const target = e.target as HTMLInputElement;
@@ -28,31 +31,25 @@ export const UploadCard = ({ handleFileUpload }: UploadCardProps) => {
     if (file && isFileUnder2GB(file.size)) {
       setFile(file);
     } else {
-      alert("file to large");
+      alert('file to large');
     }
   }, []);
-
-  const handleUpload = async (file: File) => {
-    setIsLoading(true);
-    await handleFileUpload(file);
-    setIsLoading(false);
-  };
 
   const handleSelectFile = () => {
     inputRef.current?.click();
   };
 
   useEffect(() => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "video/*";
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'video/*';
     input.multiple = false;
     inputRef.current = input;
 
-    input.addEventListener("change", handleFileAttached);
+    input.addEventListener('change', handleFileAttached);
 
     return () => {
-      input.removeEventListener("change", handleFileAttached);
+      input.removeEventListener('change', handleFileAttached);
     };
   }, [handleFileAttached]);
 
@@ -69,7 +66,7 @@ export const UploadCard = ({ handleFileUpload }: UploadCardProps) => {
         {/*  <Separator className="w-[200px]" />*/}
         {/*</div>*/}
         <p className="text-lg dark:text-white text-center text-ellipsis">
-          {file?.name || "Click to select a video to translate"}
+          {file?.name || 'Click to select a video to translate'}
         </p>
         {!file && (
           <small>All videos are public and will be deleted after 1 hour.</small>
@@ -77,7 +74,7 @@ export const UploadCard = ({ handleFileUpload }: UploadCardProps) => {
         <small>
           {file
             ? `${(file?.size / 1024 ** 2).toFixed(2)} MB`
-            : " File limit: 2 GB"}
+            : ' File limit: 2 GB'}
         </small>
 
         {file && (
@@ -89,11 +86,10 @@ export const UploadCard = ({ handleFileUpload }: UploadCardProps) => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // handleFileUpload(file);
-                handleUpload(file);
+                handleFileUpload(file);
               }}
             >
-              {isLoading ? <ThreeDots color="#ffffff" /> : "Start Translation"}
+              {isLoading ? <ThreeDots color="#ffffff" /> : 'Start Translation'}
             </Button>
             <Separator />
             <p>or click to upload another file</p>

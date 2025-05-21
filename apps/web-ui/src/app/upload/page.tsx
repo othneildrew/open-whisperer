@@ -1,45 +1,45 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useUploadFileMutation } from "@open-whisperer/rtk-query";
-import { WaveLoaderSkeleton } from "@/components/skeletons/wave-loader-skeleton";
-import { UploadCard } from "@/components/skeletons/upload-card";
-import { useCallback, useEffect, useState } from "react";
-import { BACKEND_SERVER_URL } from "@/lib/constants";
+import { useRouter } from 'next/navigation';
+import { useUploadFileMutation } from '@open-whisperer/rtk-query';
+import { WaveLoaderSkeleton } from '@/components/skeletons/wave-loader-skeleton';
+import { UploadCard } from '@/components/skeletons/upload-card';
+import { useCallback, useEffect } from 'react';
 
 export default function Upload() {
   const router = useRouter();
-  const [percentage, setPercentage] = useState<number>(0);
-  const [uploadFile, { data, error, isLoading, isError, isSuccess }] =
+  const [uploadFile, { data, isLoading, isError, isSuccess }] =
     useUploadFileMutation();
+
+  const showErrorUploadingFile = useCallback(() => {
+    alert('There was a problem uploading file. Please try again later.');
+  }, []);
 
   const handleFileUpload = useCallback(
     async (file: File) => {
-      // uploadFile({
-      //   file: new Blob([file], { type: file.type }),
-      // });
-
-      const formData = new FormData();
-      formData.append("file", file);
-
       try {
-        const result = await fetch(`${BACKEND_SERVER_URL}/uploads`, {
-          method: "POST",
-          body: formData,
+        uploadFile({
+          file,
         });
-
-        const data = await result.json();
-        const sessionId = data?.session_id;
-
-        if (sessionId) {
-          router.push(`/s/${sessionId}`);
-        }
       } catch (e) {
-        console.error("failed to upload media", e);
+        showErrorUploadingFile();
+        console.error('failed to upload media', e);
       }
     },
-    [router],
+    [showErrorUploadingFile, uploadFile]
   );
+
+  useEffect(() => {
+    if (isError) {
+      showErrorUploadingFile();
+    }
+  }, [isError, showErrorUploadingFile]);
+
+  useEffect(() => {
+    if (!isLoading && isSuccess && data?.session_id) {
+      router.push(`/s/${data.session_id}`);
+    }
+  }, [data?.session_id, isLoading, isSuccess, router]);
 
   return (
     <>

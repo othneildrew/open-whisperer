@@ -39,10 +39,6 @@ export const VideoPlayer = () => {
   }, [isFetching, isLoading, isSuccess, session, videoRef]);
 
   useEffect(() => {
-    console.log('session [video-player.tsx]:::', session);
-  }, [session]);
-
-  useEffect(() => {
     if (videoUrl) {
       setInitialized(true);
     }
