@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { StoreProvider } from '@/components/providers/store-provider';
 import { ThemeProvider } from '@/components/providers/theme-provider';
+import { TooltipProvider } from '@/components/shad-ui/tooltip';
 
 /**
  * This just neatly organizes all the providers that need to be setup at the layout level.
@@ -10,7 +11,6 @@ import { ThemeProvider } from '@/components/providers/theme-provider';
  * @constructor
  */
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
-
   return (
     <StoreProvider>
       <ThemeProvider
@@ -19,9 +19,8 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         enableSystem
         disableTransitionOnChange
       >
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
       </ThemeProvider>
     </StoreProvider>
   );
-
-}
+};

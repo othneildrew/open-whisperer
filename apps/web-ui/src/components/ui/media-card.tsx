@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import Image from "next/image";
-import { AspectRatio } from "@/components/shad-ui/aspect-ratio";
-import { BACKEND_SERVER_MEDIA_URL } from "@/lib/constants";
+import { useMemo } from 'react';
+import Image from 'next/image';
+import { AspectRatio } from '@/components/shad-ui/aspect-ratio';
+import { BACKEND_SERVER_MEDIA_URL } from '@/lib/constants';
 
 export interface SimpleCardProps {
   id: string;
@@ -20,8 +20,8 @@ export const MediaCard = ({
     () =>
       thumbnail
         ? `${BACKEND_SERVER_MEDIA_URL}/${id}/${thumbnail}`
-        : "/placeholder.jpg",
-    [id, thumbnail],
+        : '/placeholder.jpg',
+    [id, thumbnail]
   );
 
   return (

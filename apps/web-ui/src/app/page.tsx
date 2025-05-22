@@ -1,19 +1,27 @@
-"use client";
+'use client';
 
-import { useListSessionsQuery } from "@open-whisperer/rtk-query";
-import { ScrollArea } from "@/components/shad-ui/scroll-area";
-import { MediaCard } from "@/components/ui/media-card";
-import { CardSkeleton } from "@/components/skeletons/card-skeleton";
-import { WaveLoaderSkeleton } from "@/components/skeletons/wave-loader-skeleton";
-import { useRouter } from "next/navigation";
-import { ErrorCard } from "@/components/ui/error-card";
-import { Skeleton } from "@/components/shad-ui/skeleton";
-import { Button } from "@/components/shad-ui/button";
+import { useListSessionsQuery } from '@open-whisperer/rtk-query';
+import { ScrollArea } from '@/components/shad-ui/scroll-area';
+import { MediaCard } from '@/components/ui/media-card';
+import { CardSkeleton } from '@/components/skeletons/card-skeleton';
+import { WaveLoaderSkeleton } from '@/components/skeletons/wave-loader-skeleton';
+import { useRouter } from 'next/navigation';
+import { ErrorCard } from '@/components/ui/error-card';
+import { Skeleton } from '@/components/shad-ui/skeleton';
+import { Button } from '@/components/shad-ui/button';
+
+interface Session {
+  id: string;
+  input_file_name: string;
+  thumbnail?: string;
+}
 
 export default function Page() {
   const router = useRouter();
   const { data, isLoading, isFetching, isError, isSuccess } =
     useListSessionsQuery();
+
+  const sessions = (data?.data ?? {}) as Session[];
 
   return (
     <>
@@ -29,16 +37,15 @@ export default function Page() {
               <Skeleton className="w-[34%] h-[24px]" />
             ) : (
               <p>
-                All uploaded videos are public and will be deleted after 24
-                hours. Report abuse at codeguydrew+abuse@gmail.com
+                All uploaded videos are public and can be viewed by anyone that accesses this self hosted tool.
               </p>
             )}
           </div>
 
           {isError && <ErrorCard />}
 
-          {isSuccess && data?.data.length === 0 && (
-            <Button onClick={() => router.push("/upload")}>
+          {isSuccess && sessions.length === 0 && (
+            <Button onClick={() => router.push('/upload')}>
               Upload your first video
             </Button>
           )}
@@ -54,7 +61,7 @@ export default function Page() {
             ) : (
               <>
                 {!isError
-                  ? data?.data?.map(({ id, input_file_name, thumbnail }) => (
+                  ? sessions?.map(({ id, input_file_name, thumbnail }) => (
                       <MediaCard
                         key={id}
                         id={id}

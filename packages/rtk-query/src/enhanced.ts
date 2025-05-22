@@ -8,13 +8,13 @@ const enhancedOpenWhispererApi = rawApi.enhanceEndpoints({
   addTagTypes: ["Session", "Transcript", "Language"],
   endpoints: {
     listSessions: {
-      providesTags: ["Session"],
+      providesTags: [{ id: "LIST", type: "Session" }, "Session"],
     },
     getSession: {
       providesTags: ["Session"],
     },
     deleteSession: {
-      invalidatesTags: ["Session"],
+      invalidatesTags: [{ id: "LIST", type: "Session" }],
     },
     getTranscript: {
       providesTags: ["Transcript"],
@@ -31,18 +31,18 @@ const enhancedOpenWhispererApi = rawApi.enhanceEndpoints({
     uploadFile: {
       query: (queryArg: UploadFileApiArg) => {
         const formData = new FormData();
-        formData.append('file', queryArg.file)
+        formData.append("file", queryArg.file);
         return {
-          url: '/uploads',
+          url: "/uploads",
           method: "POST",
           body: formData,
-        }
+        };
       },
-      invalidatesTags: ["Session"],
+      invalidatesTags: [{ id: "LIST", type: "Session" }, "Session"],
     },
     applySubtitles: {
       invalidatesTags: ["Session"],
-    }
+    },
   },
 });
 

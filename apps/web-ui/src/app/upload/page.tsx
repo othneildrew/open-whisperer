@@ -44,7 +44,7 @@ export default function Upload() {
   return (
     <>
       <div className="flex-1 flex justify-center items-center max-w-6xl mx-auto">
-        <UploadCard handleFileUpload={handleFileUpload} />
+        <UploadCard handleFileUpload={handleFileUpload} isLoading={isLoading} />
       </div>
       <WaveLoaderSkeleton percentage={40} />
     </>
