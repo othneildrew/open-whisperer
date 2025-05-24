@@ -13,8 +13,6 @@ services:
       - "8868:8000"
     env_file:
       - .env
-
-
 #    healthcheck:
 #      test: curl -f http://localhost:8000/ || exit 1
 #      interval: 10s
@@ -39,8 +37,6 @@ services:
       - NEXT_PUBLIC_SERVER_ENDPOINT=${NEXT_PUBLIC_SERVER_ENDPOINT}
       - OPENAPI_ENDPOINT=${OPENAPI_ENDPOINT}
     working_dir: /app/apps/web-ui
-#    volumes:
-#      - .:/app
     ports:
       - "3567:3000"
     env_file:

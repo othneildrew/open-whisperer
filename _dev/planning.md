@@ -1,21 +1,4 @@
 
-
-
-### Nice to haves (for v1, if not added in v1, add later)
-
-- Styling subtitles
-- Voice cloning each speaker and using translated audio instead
-- Editing placement of subtitle text or placement and start/end times
-- Batch video/audio support
-- A good-looking UI lol :D
-- Structured mono repo setup
-- Selecting a range on the video player to decide where translations should start/end
-
-
-
-
-
-
 ## File storage strategy
 
 ```md
@@ -63,14 +46,5 @@ Data can be something like this, maybe. idk
 
 
 
-
-🚀 Bonus Features to Add
-🎛️ Subtitle Editor UI — Add a waveform + subtitle timeline
-
-🔈 Voice Cloning / Dubbing — Integrate Coqui TTS or Piper
-
-🧑‍🤝‍🧑 Speaker Diarization — Add pyannote or WhisperX
-
-🌍 Translation — Use MarianMT or Argos Translate (offline)
 
 
