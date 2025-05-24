@@ -678,7 +678,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-whisperer/rtk-query@*, @open-whisperer/rtk-query@workspace:packages/rtk-query":
+"@open-whisperer/rtk-query@workspace:^, @open-whisperer/rtk-query@workspace:packages/rtk-query":
   version: 0.0.0-use.local
   resolution: "@open-whisperer/rtk-query@workspace:packages/rtk-query"
   dependencies:
@@ -689,12 +689,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@open-whisperer/web-ui@workspace:^, @open-whisperer/web-ui@workspace:apps/web-ui":
+"@open-whisperer/web-ui@workspace:apps/web-ui":
   version: 0.0.0-use.local
   resolution: "@open-whisperer/web-ui@workspace:apps/web-ui"
   dependencies:
     "@eslint/eslintrc": ^3
-    "@open-whisperer/rtk-query": "*"
+    "@open-whisperer/rtk-query": "workspace:^"
     "@radix-ui/react-alert-dialog": ^1.1.13
     "@radix-ui/react-aspect-ratio": ^1.1.6
     "@radix-ui/react-dialog": ^1.1.13
@@ -2191,13 +2191,6 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 260d9bb6017a1b6e42d31364687f0258f78eb20210b36ef2baad38fd619d78d4e95ff7dde9b3dbe0d81f137f79a8d651a845363a26e6985997f7b71145dc5e94
-  languageName: node
-  linkType: hard
-
-"add@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "add@npm:2.0.6"
-  checksum: e2d23d40494565dfed4acd65e478570c444db5ac6c053551ed429c39ea0f2c99d83df63e7befec936df601827d2254d06a2fb6f7dcfd2022e810b25eab818b8c
   languageName: node
   linkType: hard
 
@@ -4895,9 +4888,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "open-whisperer@workspace:."
   dependencies:
-    "@open-whisperer/web-ui": "workspace:^"
-    add: ^2.0.6
-    postcss: ^8.5.3
+    react-redux: ^9.2.0
   languageName: unknown
   linkType: soft
 
