@@ -1,21 +1,3 @@
-
-
-## setup
-
-1. Activate the virtual environment
-
-```bash
-# For windows
-env/Scripts/activate
-
-# macOS/Linux
-env/bin/activate
-```
-
-
-
-
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -144,8 +126,20 @@ or
 
 ### Manual Installation
 
-// TODO: write manual installation instructions.
 A great deal of effort went into making sure it runs without issue on docker, just try it and report back if you run into any issues.
+
+// TODO: write manual installation instructions. But in the meanwhile, do use venv
+
+1. Activate the virtual environment
+
+```bash
+# For windows
+venv/Scripts/activate
+
+# macOS/Linux
+venv/bin/activate
+```
+
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
