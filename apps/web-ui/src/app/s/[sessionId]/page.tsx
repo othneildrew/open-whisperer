@@ -9,7 +9,6 @@ import {
   useGetTranscriptQuery,
 } from '@open-whisperer/rtk-query';
 import { VideoPlayer } from '@/features/video/video-player';
-import { AudioVisualizer } from '@/features/audio-visualizer/audio-visualizer';
 import { useParams } from 'next/navigation';
 import { SessionIdProvider } from '@/components/providers/session-id-provider';
 import { ScrollArea } from '@/components/shad-ui/scroll-area';

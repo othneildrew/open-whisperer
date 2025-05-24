@@ -1,12 +1,12 @@
 "use client";
 
 import colors from "tailwindcss/colors";
-import { RefObject, useEffect, useRef, useState } from "react";
-import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
-import { useSessionId } from "@/components/providers/session-id-provider";
-import TimelinePlugin from "wavesurfer.js/dist/plugins/timeline.esm.js";
+import { RefObject, useEffect, useRef } from "react";
+// import HoverPlugin from "wavesurfer.js/dist/plugins/hover.esm.js";
+// import { useSessionId } from "@/components/providers/session-id-provider";
+// import TimelinePlugin from "wavesurfer.js/dist/plugins/timeline.esm.js";
 import WaveSurfer from "wavesurfer.js";
-import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
+// import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
 import { useVideo } from "@/components/providers/video-provider";
 
 export interface AudioVisualizerProps {
@@ -16,7 +16,7 @@ export interface AudioVisualizerProps {
 export const AudioVisualizer = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const waveSurferRef = useRef<WaveSurfer>(null);
-  const sessionId = useSessionId();
+  // const sessionId = useSessionId();
   const { videoRef, initialized } = useVideo();
 
   useEffect(() => {

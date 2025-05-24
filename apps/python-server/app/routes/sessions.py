@@ -22,7 +22,8 @@ def get_session_if_exists(session_id: str, db: Session) -> Optional[Session]:
 
 @router.get("", operation_id="listSessions")
 async def list_sessions(db: Session = Depends(get_db)):
-  return {"data": db.query(Session).all()}
+  sessions = db.query(Session).all()
+  return {"data": sessions}
 
 @router.get("/{session_id}", operation_id="getSession")
 async def get_session(session_id: str, db: Session = Depends(get_db)):

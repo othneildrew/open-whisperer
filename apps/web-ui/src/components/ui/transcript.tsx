@@ -24,7 +24,6 @@ export const Transcript = ({ transcribing }: TranscriptProps) => {
     data: transcript,
     isLoading: isLoadingTranscript,
     isFetching: isFetchingTranscript,
-    isError,
     isSuccess,
   } = useGetTranscriptQuery(sessionId!, { skip: !sessionId });
 

@@ -5,7 +5,7 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
 
-const baseUrl = "http://localhost:8000";
+const baseUrl = process.env.NEXT_PUBLIC_SERVER_ENDPOINT;
 
 // Empty api service that we'll inject endpoints into later as needed
 export const baseSplitApi = createApi({

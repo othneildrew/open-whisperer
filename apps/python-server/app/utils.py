@@ -1,10 +1,6 @@
-import asyncio
-import re
 import os
 import subprocess
 import uuid
-from email.policy import strict
-
 import requests
 import json
 import ffmpeg
@@ -17,7 +13,14 @@ from typing import Union
 # Don't import any source files here to avoid circular deps
 
 # Only localhost can use this service, not intended as external api
-ALLOWED_HOSTS = ["http://localhost:3000", "localhost:3000", "localhost", "127.0.0.1", "::1"]
+ALLOWED_HOSTS = [
+  "localhost",
+  "127.0.0.1",
+  "::1",
+  # Internal docker container hostname
+  "172.25.0.1",
+  "web-ui"
+]
 
 def is_dev():
   load_dotenv()
@@ -137,6 +140,8 @@ async def add_subtitle_to_video(input_path: Path, output_path: Path, subtitle_pa
   output = output_path.as_posix()
   subtitle = subtitle_path.as_posix()
 
+  escaped_subtitle = subtitle.replace('\\', '\\\\').replace(':', '\\:')
+
   # Set up the video input
   in_video_stream = ffmpeg.input(input_file)
 
@@ -144,7 +149,7 @@ async def add_subtitle_to_video(input_path: Path, output_path: Path, subtitle_pa
   stream = ffmpeg.output(
     in_video_stream,
     output,
-    vf=f"subtitles='{subtitle.replace('\\', '\\\\').replace(':', '\\:')}'"
+    vf=f"subtitles='{escaped_subtitle}'"
   )
 
   ffmpeg.run(stream, overwrite_output=True)

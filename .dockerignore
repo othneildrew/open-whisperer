@@ -1,9 +1,0 @@
-node_modules
-.next
-dist
-*.log
-*.pyc
-__pycache__/
-.env
-uploads/
-.DS_Store

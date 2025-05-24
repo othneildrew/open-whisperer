@@ -11,7 +11,8 @@ from app.db import Base, engine
 from app.utils import ALLOWED_HOSTS, get_storage_path
 from .routes import sessions, uploads, transcripts, languages
 
-development: bool = os.getenv("ENV") == 'development'
+DEVELOPMENT: bool = os.getenv("ENV") == 'development'
+RESTRICT_HOSTS = os.getenv("RESTRICT_HOSTS", "true").lower() == "true"
 
 # Initialize (and read) the .env file here incase run.py wasn't used
 load_dotenv()
@@ -43,11 +44,6 @@ app = FastAPI(
 )
 
 # Apply middleware
-# Check host header sent in http request
-app.add_middleware(
-  TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS
-)
-
 app.add_middleware(
   CORSMiddleware,
   allow_credentials=True,
@@ -56,16 +52,22 @@ app.add_middleware(
   allow_headers=["*"],
 )
 
-# Actually restrict apis outside of localhost (yes, don't try to use my shit, host it yourself!)
-@app.middleware("http")
-async def restrict_to_localhost(request: Request, call_next):
-  client_host = request.client.host
-  if client_host not in ALLOWED_HOSTS:
-    return JSONResponse(
-      status_code=403,
-      content={"detail": "Access forbidden: only localhost is allowed"}
-    )
-  return await call_next(request)
+if RESTRICT_HOSTS:
+  # Check host header sent in http request
+  app.add_middleware(
+    TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS
+  )
+
+  # Actually restrict apis outside of localhost (yes, don't try to use my shit, host it yourself!)
+  @app.middleware("http")
+  async def restrict_to_localhost(request: Request, call_next):
+    client_host = request.client.host
+    if client_host not in ALLOWED_HOSTS:
+      return JSONResponse(
+        status_code=403,
+        content={"detail": "Access forbidden: only localhost is allowed"}
+      )
+    return await call_next(request)
 
 # Exception handler
 @app.exception_handler(Exception)

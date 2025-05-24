@@ -9,8 +9,8 @@
     "packages/*"
   ],
   "engines": {
-    "node": ">=22.14.0",
-    "yarn": ">=3.8.7"
+    "node": "^22.14.0",
+    "yarn": "^3.8.7"
   },
   "scripts": {
     "run:codegen": "yarn workspace @open-whisperer/rtk-query codegen",
@@ -20,9 +20,7 @@
     "delete:db": "rm -rf apps/python-server/database apps/python-server/storage"
   },
   "packageManager": "yarn@3.8.7",
-  "devDependencies": {
-    "@open-whisperer/web-ui": "workspace:^",
-    "add": "^2.0.6",
-    "postcss": "^8.5.3"
+  "dependencies": {
+    "react-redux": "^9.2.0"
   }
 }

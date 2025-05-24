@@ -1,15 +1,15 @@
-import type { ConfigFile } from '@rtk-query/codegen-openapi'
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
 
-const schemaFile = 'http://localhost:8000/openapi.json';
+const schemaFile = process.env.OPENAPI_ENDPOINT;
 
 const config: ConfigFile = {
   schemaFile,
-  apiFile: './src/baseSplitApi.ts',
-  apiImport: 'baseSplitApi',
-  outputFile: './src/generated/openWhispererApi.ts',
-  exportName: 'api',
+  apiFile: "./src/baseSplitApi.ts",
+  apiImport: "baseSplitApi",
+  outputFile: "./src/generated/openWhispererApi.ts",
+  exportName: "api",
   hooks: true,
   flattenArg: true,
-}
+};
 
-export default config
+export default config;

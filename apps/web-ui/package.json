@@ -6,11 +6,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:no-lint": "DISABLE_ESLINT_PLUGIN=true next build",
     "start": "next start",
     "lint": "next lint"
   },
+  "engines": {
+    "node": "^22.14.0",
+    "yarn": "^3.8.7"
+  },
+  "packageManager": "yarn@3.8.7",
   "dependencies": {
-    "@open-whisperer/rtk-query": "*",
+    "@open-whisperer/rtk-query": "workspace:^",
     "@radix-ui/react-alert-dialog": "^1.1.13",
     "@radix-ui/react-aspect-ratio": "^1.1.6",
     "@radix-ui/react-dialog": "^1.1.13",
