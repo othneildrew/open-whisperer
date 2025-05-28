@@ -2,10 +2,11 @@ import shutil
 from fastapi import APIRouter
 from fastapi.params import Depends
 from typing import Optional
+from sqlalchemy import delete
 
 from app.db import get_db
 from app.models.session import Session
-from app.utils import get_storage_path, raise_not_found_exception
+from app.utils import get_storage_path, raise_not_found_exception, delete_all_folders_in_directory
 
 router = APIRouter(
   prefix="/sessions",
@@ -67,4 +68,16 @@ async def delete_session(session_id: str, db: Session = Depends(get_db)):
 
   # Return null w/ 200 status
   return None
+
+@router.delete("/purge", operation_id="purgeSessions")
+async def purge_sessions(db: Session = Depends(get_db)):
+  storage_path = get_storage_path()
+
+  try:
+    await db.execute(delete(Session))
+    await db.commit()
+
+    delete_all_folders_in_directory(storage_path)
+  except exec:
+    print(f"Error purging all db sessions {str(exec)}")
 

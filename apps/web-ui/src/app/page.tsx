@@ -37,7 +37,10 @@ export default function Page() {
               <Skeleton className="w-[34%] h-[24px]" />
             ) : (
               <p>
-                All uploaded videos are public and can be viewed by anyone that accesses this self hosted tool.
+                All uploaded videos are public and can be viewed by anyone that
+                accesses this self hosted tool.{' '}
+                {process.env.NEXT_PUBLIC_IS_DEMO === '1' &&
+                  'Files are deleted after 25 minutes.'}
               </p>
             )}
           </div>

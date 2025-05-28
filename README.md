@@ -1,3 +1,5 @@
+<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+<a id="readme-top"></a>
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -61,7 +63,7 @@ The project's initial scope has been severely limited to reach a quick MVP and g
 
 *Expect bugs & beware of gremlins!*
 
-> Btw: The name "open whisperer" is a play on the main open source project that drives this project ([OpenAI's whisper](https://github.com/openai/whisper)). I just choose the name to get started and kept it until now; it does not indeed to infringe on any copyrights or trademarks held by Open AI.
+> Btw: The name "open whisperer" is a play on the main open source project that drives this project ([OpenAI's whisper](https://github.com/openai/whisper)). I just chose the name to get started and kept it until now; it does not indeed to infringe on any copyrights or trademarks held by Open AI.
 
 For the devs learning to code (I mean, we're all learning, but...), this is a mono-repo; if you're not familiar with this type of app, I came across a nice resource that explains the motivation behind it. It's the most extensive and helpful I've found.
 
@@ -75,9 +77,9 @@ Check it out here: https://monorepo.tools/
 ### Built With
 
 [![ffmpeg-python][ffmpeg]](https://github.com/kkroening/ffmpeg-python)
-[![OpenAI Whisper][openai]](https://github.com/kkroening/ffmpeg-python)
+[![OpenAI Whisper][openai]](https://github.com/openai/whisper)
 [![argostranslate][argos]](https://pypi.org/project/argostranslate/)
-[![Next][Next.js]][Next-url]
+[![Next][nextjs]](https://nextjs.org)
 
 
 
@@ -240,9 +242,11 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Othneil Drew - [@othneildrew](https://linkedin.com/in/othneildrew) - codeguydrew@gmail.com
+Othneil Drew - [LinkedIn @othneildrew](https://linkedin.com/in/othneildrew) - codeguydrew@gmail.com
 
 Project Link: [https://github.com/othneildrew/open-whisperer](https://github.com/othneildrew/open-whisperer)
+
+Website: https://othneildrew.com
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -275,8 +279,7 @@ Big shout out to these amazing resources! Some aren't used yet, but these are mo
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [repo]: https://github.com/othneildrew/open-whisperer 
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[nextjs]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [ffmpeg]: https://img.shields.io/badge/ffmpeg-007808?style=for-the-badge&logo=ffmpeg&logoColor=white
 [openai]: https://img.shields.io/badge/OpenAI%20Whisper-412991?style=for-the-badge&logo=openai&logoColor=white
 [argos]: https://img.shields.io/badge/argostranslate-1565C0?style=for-the-badge&logo=LibreTranslate&logoColor=white
-[Next-url]: https://nextjs.org/

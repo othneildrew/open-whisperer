@@ -6,11 +6,11 @@ from sqlalchemy.orm import sessionmaker
 from app.utils import get_project_root_path
 
 root_dir = get_project_root_path()
-dest_dir = root_dir / "database/sqlite"
+dest_dir = root_dir / "data/sqlite"
 
 # Create dir if it doesn't exist
 dest_dir.mkdir(parents=True, exist_ok=True)
-db_file = dest_dir / os.getenv("SQLITE_DATABASE", "app.db")
+db_file = dest_dir / os.getenv("SQLITE_DATABASE", "openwhisperer.db")
 
 engine = create_engine(
   f"sqlite:///{db_file}", connect_args={"check_same_thread": False}

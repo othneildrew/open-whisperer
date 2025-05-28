@@ -1,14 +1,26 @@
-import type { NextConfig } from "next";
-
-const IMG_SERVER = process.env.NEXT_PUBLIC_SERVER_ENDPOINT;
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   // https://nextjs.org/docs/app/api-reference/config/next-config-js/output
   output: 'standalone',
   images: {
+    unoptimized: true,
     remotePatterns: [
-      new URL(`${IMG_SERVER}/media/**`),
-    ]
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8000',
+        pathname: '/media/**',
+        search: '',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8868',
+        pathname: '/media/**',
+        search: '',
+      },
+    ],
   },
 };
 

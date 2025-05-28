@@ -2,13 +2,12 @@ import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.db import Base, engine
-from app.utils import ALLOWED_HOSTS, get_storage_path
+from app.utils import get_storage_path, get_project_root_path, is_dev
 from .routes import sessions, uploads, transcripts, languages
 
 DEVELOPMENT: bool = os.getenv("ENV") == 'development'
@@ -52,22 +51,6 @@ app.add_middleware(
   allow_headers=["*"],
 )
 
-if RESTRICT_HOSTS:
-  # Check host header sent in http request
-  app.add_middleware(
-    TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS
-  )
-
-  # Actually restrict apis outside of localhost (yes, don't try to use my shit, host it yourself!)
-  @app.middleware("http")
-  async def restrict_to_localhost(request: Request, call_next):
-    client_host = request.client.host
-    if client_host not in ALLOWED_HOSTS:
-      return JSONResponse(
-        status_code=403,
-        content={"detail": "Access forbidden: only localhost is allowed"}
-      )
-    return await call_next(request)
 
 # Exception handler
 @app.exception_handler(Exception)
@@ -88,8 +71,17 @@ app.include_router(languages.router)
 # Serve the static folder with all the files
 storage_path = get_storage_path()
 storage_path.mkdir(parents=True, exist_ok=True)
-app.mount("/media", StaticFiles(directory=get_storage_path()), name="media")
+app.mount("/media", StaticFiles(directory=storage_path), name="media")
 
 @app.get("/", operation_id="sayHello")
 async def hello():
   return {"message": "Hello World"}
+
+
+@app.get("/debug/media", operation_id="getDebugMediaDir")
+async def get_debug_media_dir():
+  return {
+    "is_dev": is_dev(),
+    "project_root": get_project_root_path(),
+    "storage_path": get_storage_path(),
+  }

@@ -30,6 +30,7 @@ FROM python:3.11-slim AS runtime
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
+    cron \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -42,10 +43,19 @@ RUN adduser --system fastapi
 COPY --from=builder --chown=fastapi:py /app /app
 COPY --from=builder --chown=fastapi:py /install /usr/local/lib/python3.11/site-packages
 
+# Copy & setup cron job from removing sessions
+COPY --from=builder /app/app/cron/purge_sessions_cron /etc/cron.d/purge_sessions_cron
+RUN chmod 0644 /etc/cron.d/purge_sessions_cron
+RUN crontab /etc/cron.d/purge_sessions_cron
+RUN touch /var/log/cron.log
+
+RUN chmod +x /app/entrypoint.sh
+
 # Set environment
 ENV ENV=production
 ENV PORT=8000
 ENV HOST="0.0.0.0"
 
 # Start server
-CMD ["python", "run.py"]
+# CMD ["python", "run.py"]
+ENTRYPOINT ["/app/entrypoint.sh"]

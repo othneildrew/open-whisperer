@@ -2,7 +2,7 @@
 
 import { CloudUpload } from 'lucide-react';
 import { Separator } from '@/components/shad-ui/separator';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/shad-ui/button';
 import { ThreeDots } from 'react-loader-spinner';
 
@@ -10,11 +10,6 @@ export interface UploadCardProps {
   handleFileUpload: (file: File) => Promise<void>;
   isLoading?: boolean;
 }
-
-const isFileUnder2GB = (size: number) => {
-  const maxSizeInBytes = 2 * 1024 * 1024 * 1024; // 2 GB in bytes
-  return size <= maxSizeInBytes;
-};
 
 export const UploadCard = ({
   handleFileUpload,
@@ -24,16 +19,29 @@ export const UploadCard = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
 
-  const handleFileAttached = useCallback((e: Event) => {
-    const target = e.target as HTMLInputElement;
-    const file = target.files?.[0];
-
-    if (file && isFileUnder2GB(file.size)) {
-      setFile(file);
-    } else {
-      alert('file to large');
-    }
+  const maxSize = useMemo(() => {
+    const max = parseInt(process.env.NEXT_PUBLIC_UPLOAD_MAX_SIZE || '');
+    const value = max * 1024 * 1024;
+    if (!max) return null;
+    return {
+      value,
+      text: `${(value / 1024 ** 2).toFixed(2)} MB`,
+    };
   }, []);
+
+  const handleFileAttached = useCallback(
+    (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
+
+      if (file && (!maxSize || file.size <= maxSize?.value)) {
+        setFile(file);
+      } else {
+        alert(`The uploaded file is too large. File limit: ${maxSize?.text}`);
+      }
+    },
+    [maxSize]
+  );
 
   const handleSelectFile = () => {
     inputRef.current?.click();
@@ -60,21 +68,23 @@ export const UploadCard = ({
     >
       <div className="flex flex-col justif-center items-center">
         <CloudUpload size={64} />
-        {/*<p className="text-lg dark:text-white text-center">Drag & drop</p>*/}
-        {/*<div className="flex justify-around items-center gap-4">*/}
-        {/*  <Separator className="w-[200px]" /> or{" "}*/}
-        {/*  <Separator className="w-[200px]" />*/}
-        {/*</div>*/}
         <p className="text-lg dark:text-white text-center text-ellipsis">
           {file?.name || 'Click to select a video to translate'}
         </p>
         {!file && (
-          <small>All videos are public and will be deleted after 1 hour.</small>
+          <small>
+            All videos are public{' '}
+            {process.env.NEXT_PUBLIC_IS_DEMO === '1'
+              ? 'and will be deleted after 25 minutes.'
+              : 'and can be seen by anyone until deleted.'}
+          </small>
         )}
         <small>
           {file
             ? `${(file?.size / 1024 ** 2).toFixed(2)} MB`
-            : ' File limit: 2 GB'}
+            : maxSize
+              ? `File limit: ${maxSize.text}`
+              : null}
         </small>
 
         {file && (

@@ -36,7 +36,7 @@ export const MediaCard = ({
           alt="thumbnail"
           className="rounded-lg object-cover"
           unselectable="on"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 28vw"
+          // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 28vw"
           draggable={false}
         />
       </AspectRatio>

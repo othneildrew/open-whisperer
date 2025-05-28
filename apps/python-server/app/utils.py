@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import uuid
 import requests
@@ -10,24 +11,16 @@ from fastapi import HTTPException
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_500_INTERNAL_SERVER_ERROR
 from typing import Union
 
+
 # Don't import any source files here to avoid circular deps
-
-# Only localhost can use this service, not intended as external api
-ALLOWED_HOSTS = [
-  "localhost",
-  "127.0.0.1",
-  "::1",
-  # Internal docker container hostname
-  "172.25.0.1",
-  "web-ui"
-]
-
 def is_dev():
   load_dotenv()
   return os.getenv("ENV") == 'development'
 
+
 def generate_session_id():
   return uuid.uuid4().hex
+
 
 def get_client_ip():
   services = [
@@ -46,28 +39,34 @@ def get_client_ip():
       continue
   return '<unknown_ip>'
 
+
 def raise_not_found_exception(resource: str):
   raise HTTPException(
     status_code=HTTP_404_NOT_FOUND,
     detail=f"{resource} not found"
   )
 
+
 def get_project_root_path():
   return Path(__file__).resolve().parent.parent
 
+
 def get_storage_path():
-  parent_dir = get_project_root_path()
+  parent_dir = get_project_root_path() / 'data'
   env_path = os.getenv('UPLOAD_PATH', 'storage')
   # Force path to be relative to project's root
   relative_path = env_path.lstrip('/\\')
   return parent_dir / relative_path
 
+
 def get_session_storage_dir(session_id: str):
   return get_storage_path() / session_id
+
 
 def delete_existing_input_files(dest_dir: Path):
   for existing_file in dest_dir.glob("input.*"):
     existing_file.unlink()
+
 
 async def session_json_save(session_id: str, file_name: str, json_data):
   session_dir = get_session_storage_dir(session_id)
@@ -82,6 +81,7 @@ async def session_json_save(session_id: str, file_name: str, json_data):
     json.dump(json_data, f, ensure_ascii=False, indent=ident)
 
   os.replace(temp_file, dest_file)
+
 
 async def session_json_load(session_id: str, file_name):
   session_dir = get_session_storage_dir(session_id)
@@ -113,6 +113,7 @@ async def generate_thumbnail(video_path: Union[str, Path], thumbnail_path: str, 
     print("ffmpeg error output:\n", result.stderr)
     raise RuntimeError(f"ffmpeg failed with {result.returncode}")
 
+
 async def extract_audio_from_video(input_file: Path, output_file: Path):
   """
   Generates a .wav file with industry recommended settings to optimize the transcription and diarization processes.
@@ -123,17 +124,18 @@ async def extract_audio_from_video(input_file: Path, output_file: Path):
   try:
     cmd = [
       "ffmpeg",
-      "-y",               # run non interactively, overwrite the previous file
-      "-i", str(input_file),   # input file
-      "-ar", "16000",     # recommended 16kHz sampling rate for transcriptions & diarization
-      "-ac", "1",         # mono channel
-      "-f", "wav",        # format (wav)
+      "-y",  # run non interactively, overwrite the previous file
+      "-i", str(input_file),  # input file
+      "-ar", "16000",  # recommended 16kHz sampling rate for transcriptions & diarization
+      "-ac", "1",  # mono channel
+      "-f", "wav",  # format (wav)
       str(output_file)
     ]
 
     subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   except (OSError, IOError) as exc:
     print(f"Failed to extract and save audio file {str(exc)}")
+
 
 async def add_subtitle_to_video(input_path: Path, output_path: Path, subtitle_path: Path):
   input_file = input_path.as_posix()
@@ -153,3 +155,12 @@ async def add_subtitle_to_video(input_path: Path, output_path: Path, subtitle_pa
   )
 
   ffmpeg.run(stream, overwrite_output=True)
+
+
+def delete_all_folders_in_directory(dir_path: Path):
+  try:
+    for entry in dir_path.iterdir():
+      if entry.is_dir():
+        shutil.rmtree(entry)
+  finally:
+    print("Purged all session folders")

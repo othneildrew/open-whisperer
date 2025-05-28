@@ -1,6 +1,6 @@
 services:
   python-server:
-    container_name: python-server
+    container_name: whisperer-python-server
     networks:
       - whisper-network
     build:
@@ -8,11 +8,11 @@ services:
       dockerfile: apps/python-server/Dockerfile
     working_dir: /app
     volumes:
-      - python_data:/app/storage
+      - python_data:/app/data
     ports:
       - "8868:8000"
     env_file:
-      - .env
+      - ./apps/python-server/.env
 #    healthcheck:
 #      test: curl -f http://localhost:8000/ || exit 1
 #      interval: 10s
@@ -21,26 +21,27 @@ services:
 #      start_period: 5s
 
   web-ui:
-    container_name: web-ui
+    container_name: whisperer-web-ui
     networks:
       - whisper-network
+      - web
     build:
       context: .
       dockerfile: apps/web-ui/Dockerfile
-      args:
-        NEXT_PUBLIC_SERVER_ENDPOINT: ${NEXT_PUBLIC_SERVER_ENDPOINT}
-        OPENAPI_ENDPOINT: ${OPENAPI_ENDPOINT}
+#      args:
+#        NEXT_PUBLIC_SERVER_ENDPOINT: ${NEXT_PUBLIC_SERVER_ENDPOINT}
+#        OPENAPI_ENDPOINT: ${OPENAPI_ENDPOINT}
 #    depends_on:
 #      python-server:
 #        condition: service_healthy
-    environment:
-      - NEXT_PUBLIC_SERVER_ENDPOINT=${NEXT_PUBLIC_SERVER_ENDPOINT}
-      - OPENAPI_ENDPOINT=${OPENAPI_ENDPOINT}
+#    environment:
+#      - NEXT_PUBLIC_SERVER_ENDPOINT=${NEXT_PUBLIC_SERVER_ENDPOINT}
+#      - OPENAPI_ENDPOINT=${OPENAPI_ENDPOINT}
     working_dir: /app/apps/web-ui
     ports:
       - "3567:3000"
     env_file:
-      - .env
+      - ./apps/web-ui/.env.production.local
 
 volumes:
   python_data:
@@ -48,7 +49,6 @@ volumes:
 networks:
   whisper-network:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.25.0.0/16
-          gateway: 172.25.0.1
+
+  web:
+    external: true

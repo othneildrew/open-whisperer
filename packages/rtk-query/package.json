@@ -9,7 +9,8 @@
     }
   },
   "scripts": {
-    "codegen": "npx @rtk-query/codegen-openapi ./openapi-config.ts"
+    "codegen": "cross-env OPENAPI_ENDPOINT=\"http://localhost:8000/openapi.json\" npx @rtk-query/codegen-openapi ./openapi-config.ts",
+    "docker:codegen": "OPENAPI_ENDPOINT=\"./src/openapi.json\" npx @rtk-query/codegen-openapi ./openapi-config.ts"
   },
   "devDependencies": {
     "@rtk-query/codegen-openapi": "^2.0.0",

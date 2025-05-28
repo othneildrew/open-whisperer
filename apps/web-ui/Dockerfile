@@ -3,7 +3,7 @@ FROM node:22.14.0-alpine AS builder
 
 # Recommended to install shared libraries that might be missing
 # See: https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3?tab=readme-ov-file#nodealpine
-RUN apk add --no-cache libc6-compat
+RUN apk add libc6-compat
 
 # Enable Corepack and set Yarn version
 RUN corepack enable && corepack prepare yarn@3.8.7 --activate
@@ -25,13 +25,13 @@ RUN npm_config_platform=linux \
     npm_config_libc=musl
 
 # Ensure proper endpoint set for static media during builds/apis
-ARG NEXT_PUBLIC_SERVER_ENDPOINT
-ARG OPENAPI_ENDPOINT
-ENV NEXT_PUBLIC_SERVER_ENDPOINT=${NEXT_PUBLIC_SERVER_ENDPOINT}
-ENV OPENAPI_ENDPOINT=${OPENAPI_ENDPOINT}
-
-RUN echo OPEN_API_ENDPOINT && \
-    echo NEXT_PUBLIC_SERVER_ENDPOINT
+#ARG NEXT_PUBLIC_SERVER_ENDPOINT
+#ARG OPENAPI_ENDPOINT
+#ENV NEXT_PUBLIC_SERVER_ENDPOINT=${NEXT_PUBLIC_SERVER_ENDPOINT}
+#ENV OPENAPI_ENDPOINT=${OPENAPI_ENDPOINT}
+#
+#RUN echo OPEN_API_ENDPOINT && \
+#    echo NEXT_PUBLIC_SERVER_ENDPOINT
 
 
 # Install dependencies (including workspaces)
@@ -43,8 +43,8 @@ COPY apps/web-ui/ apps/web-ui/
 COPY packages/rtk-query/ packages/rtk-query/
 
 # Run the api codegen
-ENV OPENAPI_ENDPOINT="./src/openapi.json"
-RUN yarn workspace @open-whisperer/rtk-query codegen
+#ENV OPENAPI_ENDPOINT="./src/openapi.json"
+RUN yarn workspace @open-whisperer/rtk-query docker:codegen
 
 # Build the Next.js app (standalone output set in next.config.js)
 ENV NEXT_TELEMETRY_DISABLED=1

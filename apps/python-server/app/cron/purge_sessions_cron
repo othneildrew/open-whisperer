@@ -1,0 +1,1 @@
+*/25 * * * * /usr/local/bin/python /app/purge_sessions.py >> /tmp/purge.log 2>&1
