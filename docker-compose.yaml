@@ -9,7 +9,7 @@ services:
       dockerfile: apps/python-server/Dockerfile
     working_dir: /app
     volumes:
-      - python_data:/app/data
+      - whisper_data:/app/data
     expose:
       - "8000"
     env_file:
@@ -44,7 +44,7 @@ services:
       - traefik.http.services.open-whisperer.loadbalancer.server.port=3000
 
 volumes:
-  python_data:
+  whisper_data:
 
 networks:
   web: # used by traefik
