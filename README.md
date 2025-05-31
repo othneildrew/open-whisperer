@@ -12,8 +12,6 @@
   <p align="center">
     AI Video Translator and Subtitler
     <br />
-    <a href="https://othneildrew.dev/demo/open-whisperer"><strong>Try the demo »</strong></a>
-    <br />
     <br />
     <a href="https://github.com/othneildrew/open-whisperer/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     &middot;
