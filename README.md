@@ -107,21 +107,23 @@ or
 ### Docker Installation
 
 1. Install Docker: https://www.docker.com/get-started
-2. Pull the Docker image
+2. Create .env files (use the examples in both `apps/python-server` and `apps/web-ui`
    ```sh
-   docker pull othneildrew/open-whisperer:latest
+   cp apps/web-ui/.example.env.production.local apps/web-ui/.env.producation.local # used by docker
+   cp apps/web-ui/.example.env.production.local apps/web-ui/.env.development.local # used when running locally in dev (i.e.: npm run dev)
+   cp apps/python-server/.example.env apps/python-server/.env # used by docker
    ```
-3. Run the container
+4. Run the containers
    ```sh
-   docker run -d --name open-whisperer
+   docker compose up --build -d
    ```
-4. Verify the container is running
+5. Verify the container is running
    ```sh
    docker ps
    ```
-5. Access the Web UI
-    Visit http://localhost:3567
-6. Enjoy
+6. Access the Web UI
+   Visit http://localhost:3567
+7. Enjoy
    
 
 ### Manual Installation
